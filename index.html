@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-  <title>Test</title>
+  <title>Temperature</title>
   <style>
     .container {
       text-align: center;
@@ -15,15 +15,7 @@
 <body>
   <div class="container">
     <form name="pyform" method="POST" action="/cgi-bin/calcu.py">
-      Num1:&emsp;<input type="number" name="fnum"/><br/><br/>
-      Num2:&emsp;<input type="number" name="snum"/><br/><br/>
-      <SELECT name="oprnum">
-        <OPTION></OPTION>
-        <OPTION value=+>+</OPTION>
-        <OPTION value=->-</OPTION>
-        <OPTION value=*>*</OPTION>
-        <OPTION value=/>/</OPTION>
-        </SELECT>
+      temp:&emsp;<input type="number" name="temp"/><br/><br/>
       <input type="submit" name="submit" value="Submit"/><br/>
     </form>
   </div>
