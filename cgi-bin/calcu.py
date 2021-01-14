@@ -6,18 +6,26 @@ import cgi,cgitb
 cgitb.enable() #for debugging
 
 form = cgi.FieldStorage()
-num1= form.getvalue('fnum')
-num2= form.getvalue('snum')
-opr=form.getvalue('oprnum')
-if opr=="+":
-    num3=int(num1)+int(num2)
-elif opr=="-":
-    num3=int(num1)-int(num2)
-elif opr=="*":
-    num3=int(num1)*int(num2)
-elif opr=="/":
-    num3=int(num1)/int(num2)
+num1 = form.getvalue('fnum')
+num2 = form.getvalue('snum')
+opr = form.getvalue('oprnum')
 
-print("<h1>This is First Number %s</h1>" % (num1))
-print("<h1>This is Second Number %s</h1>" % (num2))
-print("<h1>Answer is %s</h1>"%(num3)) 
+if opr == "+":
+    total = int(num1)+int(num2)
+elif opr == "-":
+    total = int(num1)-int(num2)
+elif opr == "*":
+    total = int(num1)*int(num2)
+elif opr == "/":
+    total = int(num1)/int(num2)
+
+f = open("total.txt", "w+")
+f.write("num1 : " + num1 + "<br>")
+f.write("operator : " + opr + "<br>")
+f.write("num2 : " + num2 + "<br>")
+f.write("total : " + str(total))
+f.close()
+
+#open and read the file after the appending:
+f = open("total.txt", "r")
+print("<h1>", f.read() ,"</h1>")

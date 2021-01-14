@@ -1,0 +1,1 @@
+num1 : 1<br>operator : +<br>num2 : 2<br>total : 3
