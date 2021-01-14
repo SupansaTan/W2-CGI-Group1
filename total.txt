@@ -1,1 +1,1 @@
-num1 : 1<br>operator : +<br>num2 : 2<br>total : 3
+<br>1<br>2<br>3<br><br><br>1<br>4<br>5<br><br><br>1<br>4<br>5<br><br>

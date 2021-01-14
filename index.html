@@ -16,8 +16,14 @@
   <div class="container">
     <form name="pyform" method="POST" action="/cgi-bin/calcu.py">
       Num1:&emsp;<input type="number" name="fnum"/><br/><br/>
-      opr:&emsp;<input type="text" name="oprnum"/><br/><br/>
       Num2:&emsp;<input type="number" name="snum"/><br/><br/>
+      <SELECT name="oprnum">
+        <OPTION></OPTION>
+        <OPTION value=+>+</OPTION>
+        <OPTION value=->-</OPTION>
+        <OPTION value=*>*</OPTION>
+        <OPTION value=/>/</OPTION>
+        </SELECT>
       <input type="submit" name="submit" value="Submit"/><br/>
     </form>
   </div>

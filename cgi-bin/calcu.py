@@ -19,11 +19,12 @@ elif opr == "*":
 elif opr == "/":
     total = int(num1)/int(num2)
 
-f = open("total.txt", "w+")
-f.write("num1 : " + num1 + "<br>")
+f = open("total.txt", "a")
+f.write("<br>" + "num1 : " + num1 + "<br>")
 f.write("operator : " + opr + "<br>")
 f.write("num2 : " + num2 + "<br>")
-f.write("total : " + str(total))
+f.write("total : " + str(total) + "<br>")
+f.write("<br>")
 f.close()
 
 #open and read the file after the appending:
