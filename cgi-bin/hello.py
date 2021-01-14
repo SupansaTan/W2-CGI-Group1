@@ -1,10 +1,14 @@
 #!/usr/bin/python3 
-print("Content-Type: text/html") 
-print()                              
+print("Content-Type: text/html")    
+print()                             
  
 import cgi,cgitb
-cgitb.enable()
+cgitb.enable() #for debugging
 
 form = cgi.FieldStorage()
-name = form.getvalue('fname')
-print("<h1>Hello, %s</h1>" % (name))
+num1= form.getvalue('fnum')
+num2= form.getvalue('snum')
+num3=int(num1)+int(num2)
+print("<h1>This is First Number %s</h1>" % (num1))
+print("<h1>This is Second Number %s</h1>" % (num2))
+print("<h1>Answer is %s</h1>"%(num3)) 
