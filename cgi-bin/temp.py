@@ -1,20 +1,13 @@
 #!/usr/bin/python3 
 print("Content-Type: text/html")
 print("<html>")
-head = ""
-body = ""
+print()
 
 import cgi,cgitb
 from datetime import *
 cgitb.enable()
-
-# add part of head html
-head +=  """<head>
-                <title>Temperature</title>
-            </head>""" 
-print(head)
-print()                           
-
+body = ""
+                        
 # get value : form
 form = cgi.FieldStorage()
 temp_input = form.getvalue('temp')
@@ -30,17 +23,23 @@ f = open("temp.txt", "a+")
 f.write(date_now + "," + time_now + "," + str(temp_input) + "\n")
 f.close()
 
-#open and read the file after the appending:
+# open and read the file after the appending:
 f = open("temp.txt", "r")
 read_file = f.readlines()
-
-body += """<div class="table-container">
-                <table id="temp-table">
-                    <tr>
-                        <th class="column1">Date</th>
-                        <th class="column2">Time</th>
-                        <th class="column3">Temperature</th>
-                    </tr>
+ 
+body += """
+        <link rel="stylesheet" href="/temp.css">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+        <title>Temperature</title>
+        <body>
+        <div class="table-container">
+            <table id="temp-table">
+                <tr>
+                    <th class="column1">Date</th>
+                    <th class="column2">Time</th>
+                    <th class="column3">Temperature</th>
+                </tr>
         """
 
 for i in range(len(read_file)):
