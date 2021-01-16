@@ -6,8 +6,18 @@ body {
     text-align: center;
 }
 
-input {
-    align-items: center;
+input[type=submit]{
+    background-color: #094575;
+    border: none;
+    color: white;
+    padding: 16px 32px;
+}
+input[type=number]{
+    padding: 12px 20px;
+    margin: 8px 0;
+    border: none;
+    background-color: #c8dff3;
+    color:black;
 }
 
 /* distance between columns */
