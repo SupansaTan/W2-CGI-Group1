@@ -2,6 +2,14 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
+.form-container {
+    text-align: center;
+}
+
+input {
+    align-items: center;
+}
+
 /* distance between columns */
 .column1 {
     width: 10%;
