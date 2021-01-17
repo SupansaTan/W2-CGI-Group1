@@ -14,9 +14,10 @@ def generate_form():
         <title>Temperature</title>
         <body>
         <div class="form-container">
+            <h2>What is the temperature now ?</h2>
             <form name="pyform" method="POST" action="/cgi-bin/temp.py">
-                <input type="number" name="temp"/><br><br>
-                <input type="submit" id="submit_btn" name="submit" value="Submit"/><br>
+                <input type="number" name="temp">
+                <input type="submit" id="submit_btn" name="submit" value="Submit">
             </form>
         </div>
         """

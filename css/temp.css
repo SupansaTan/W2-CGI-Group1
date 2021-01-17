@@ -2,7 +2,12 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
+form {
+    display: inline;
+}
+
 .form-container {
+    padding-top: 5px;
     text-align: center;
 }
 
@@ -10,7 +15,10 @@ input[type=submit]{
     background-color: #094575;
     border: none;
     color: white;
-    padding: 16px 32px;
+    padding: 10px 32px;
+    font-family: 'Poppins', sans-serif;
+    margin-left: 10px;
+    font-weight: bold;
 }
 input[type=number]{
     padding: 12px 20px;
@@ -34,7 +42,7 @@ input[type=number]{
 }
 
 .table-container {
-    padding-top: 5%;
+    padding-top: 3%;
     padding-bottom: 5%;
 }
 
