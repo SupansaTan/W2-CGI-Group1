@@ -16,7 +16,7 @@ def generate_form():
         <div class="form-container">
             <h2>What is the temperature now ?</h2>
             <form name="pyform" method="POST" action="/cgi-bin/temp.py">
-                <input type="number" name="temp">
+                <input type="number" step="0.01" name="temp">
                 <input type="submit" id="submit_btn" name="submit" value="Submit">
             </form>
         </div>
@@ -65,38 +65,16 @@ def read_file_before_submit():
     
     return table_body
 
-def read_file_after_submitted():
-    f = open("temp.txt", "r")
-    read = f.readlines()
-
-    # read only line that before the last line
-    split_values = read[len(read)-1].split(",")
-    date = split_values[0]
-    time = split_values[1]
-    temp = split_values[2]
-
-    table_body = \
-        """ <tr>
-                <td class="column1">{0}</td>
-                <td class="column2">{1}</td>
-                <td class="column3">{2}</td>
-            </tr>
-        """.format(date, time, temp)
-    return table_body
-
 # run the first time
 if __name__ == "__main__":
+    form = cgi.FieldStorage()
+    temp_input = form.getvalue('temp')
+    if temp_input != None:
+        write_file(temp_input)
+
     print("Content-Type: text/html")
     print("<html>")
     print()
     body += generate_form()
     body += read_file_before_submit()
     print(body)
-
-# after submitted the form then append temperature in file txt 
-# and add row in the table
-form = cgi.FieldStorage()
-temp_input = form.getvalue('temp')
-if temp_input != None:
-    write_file(temp_input)
-    print(read_file_after_submitted())
