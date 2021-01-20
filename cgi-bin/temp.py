@@ -137,9 +137,10 @@ if __name__ == "__main__":
     body += generate_form()
     if test=="1":
         body += read_file2()
-            
+    elif test=="2":
+        body += read_file1()   
     else:
-        body += read_file1()
+        body += read_file2()
         
             
     print(body)
