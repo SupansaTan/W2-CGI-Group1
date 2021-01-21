@@ -17,9 +17,9 @@ def generate_form():
             <h2>What is the temperature now ?</h2>
             <form name="pyform" method="POST" action="/cgi-bin/temp.py">
                 <input type="number" step="0.01" name="temp">
-                <input type="radio" name="test" value="1">
+                <input type="radio" name="sort" value="ascending">
                 <label for="mintomax">Min to Max</label>
-                <input type="radio" name="test" value="2">
+                <input type="radio" name="sort" value="descending">
                 <label for="maxtomin">Max to Min</label>
                 <input type="submit" id="submit_btn" name="submit" value="Submit">
             </form>
@@ -36,11 +36,11 @@ def write_file(temp):
     f.write(date_now + "," + time_now + "," + str(temp) + "\n")
     f.close()
 
-def read_file_Min_to_Max():
+def read_file_max_to_min():
     f = open("temp.txt", "r")
     read = f.readlines()
     
-    # part of head table (topics)
+    # part of head table
     table_body = \
         """
         <div class="table-container">
@@ -52,7 +52,7 @@ def read_file_Min_to_Max():
                 </tr>
         """
 
-    # sort temp
+    # sort temp descending (max to min)
     temp_logs = []
     f = open("temp.txt", "r")
     read = f.readlines()
@@ -66,7 +66,7 @@ def read_file_Min_to_Max():
     
         temp_sort = sorted(temp_logs, key=lambda x:x["temp"], reverse=True)
 
-    #display 
+    # display date and temp in table
     for obj in temp_sort:
 
         table_body += \
@@ -79,11 +79,11 @@ def read_file_Min_to_Max():
 
     return table_body
 
-def read_file_Max_to_Min():
+def read_file_min_to_max():
     f = open("temp.txt", "r")
     read = f.readlines()
     
-    # part of head table (topics)
+    # part of head table
     table_body = \
         """
         <div class="table-container">
@@ -95,7 +95,7 @@ def read_file_Max_to_Min():
                 </tr>
         """
 
-    # sort temp
+    # sort temp ascending
     temp_logs = []
     f = open("temp.txt", "r")
     read = f.readlines()
@@ -109,7 +109,7 @@ def read_file_Max_to_Min():
     
         temp_sort = sorted(temp_logs, key=lambda x:x["temp"], reverse=False)
 
-    #display 
+    # display date and temp in table
     for obj in temp_sort:
 
         table_body += \
@@ -127,7 +127,8 @@ if __name__ == "__main__":
     
     form = cgi.FieldStorage()
     temp_input = form.getvalue('temp')
-    test=form.getvalue('test')
+    sort_format = form.getvalue('sort')
+
     if temp_input != None:
         write_file(temp_input)
 
@@ -135,9 +136,10 @@ if __name__ == "__main__":
     print("<html>")
     print()
     body += generate_form()
-    if test=="1":
-        body += read_file_Max_to_Min()
 
+    if sort_format == "ascending":
+        body += read_file_min_to_max()
     else:
-        body += read_file_Min_to_Max()
+        body += read_file_max_to_min()
+
     print(body)
