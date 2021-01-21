@@ -37,9 +37,6 @@ def write_file(temp):
     f.close()
 
 def read_file_max_to_min():
-    f = open("temp.txt", "r")
-    read = f.readlines()
-    
     # part of head table
     table_body = \
         """
@@ -55,9 +52,9 @@ def read_file_max_to_min():
     # sort temp descending (max to min)
     temp_logs = []
     f = open("temp.txt", "r")
-    read = f.readlines()
-    for i in range(len(read)):
-        split_values = read[i].split(",")
+    temp_readlines = f.readlines()
+    for i in range(len(temp_readlines)):
+        split_values = temp_readlines[i].split(",")
         date = split_values[0]
         time = split_values[1]
         temp = split_values[2]
@@ -80,9 +77,6 @@ def read_file_max_to_min():
     return table_body
 
 def read_file_min_to_max():
-    f = open("temp.txt", "r")
-    read = f.readlines()
-    
     # part of head table
     table_body = \
         """
@@ -98,9 +92,9 @@ def read_file_min_to_max():
     # sort temp ascending
     temp_logs = []
     f = open("temp.txt", "r")
-    read = f.readlines()
-    for i in range(len(read)):
-        split_values = read[i].split(",")
+    temp_readlines = f.readlines()
+    for i in range(len(temp_readlines)):
+        split_values = temp_readlines[i].split(",")
         date = split_values[0]
         time = split_values[1]
         temp = split_values[2]
@@ -110,7 +104,7 @@ def read_file_min_to_max():
         temp_sort = sorted(temp_logs, key=lambda x:x["temp"], reverse=False)
 
     # display date and temp in table
-    for obj in temp_sort:
+    for temp in temp_sort:
 
         table_body += \
             """ <tr>
@@ -118,7 +112,7 @@ def read_file_min_to_max():
                     <td class="column2">{1}</td>
                     <td class="column3">{2}</td>
                 </tr>
-            """.format(obj["date"], obj["time"], obj["temp"])
+            """.format(temp["date"], temp["time"], temp["temp"])
 
     return table_body
 
