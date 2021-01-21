@@ -2,6 +2,7 @@
 
 import cgi,cgitb
 from datetime import *
+import csv
 cgitb.enable()
 body = ""
 
@@ -49,19 +50,21 @@ def read_file_max_to_min():
                 </tr>
         """
 
-    # sort temp descending (max to min)
+    # read file csv
     temp_logs = []
-    f = open("temp.txt", "r")
-    temp_readlines = f.readlines()
-    for i in range(len(temp_readlines)):
-        split_values = temp_readlines[i].split(",")
-        date = split_values[0]
-        time = split_values[1]
-        temp = split_values[2]
-        temp_obj = {"date":date, "time":time, "temp":float(temp)}
-        temp_logs.append(temp_obj)
+    with open('temp.csv', mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        line_count = 0
+
+        for row in csv_reader:
+            if line_count == 0:
+                line_count += 1
+            else:
+                temp_obj = {"date":row["date"], "time":row["time"], "temp":float(row["temp"])}
+                temp_logs.append(temp_obj)
     
-        temp_sort = sorted(temp_logs, key=lambda x:x["temp"], reverse=True)
+    # sort temp descending (max to min)
+    temp_sort = sorted(temp_logs, key=lambda x:x["temp"], reverse=True)
 
     # display date and temp in table
     for obj in temp_sort:
@@ -89,19 +92,21 @@ def read_file_min_to_max():
                 </tr>
         """
 
-    # sort temp ascending
+    # read file csv
     temp_logs = []
-    f = open("temp.txt", "r")
-    temp_readlines = f.readlines()
-    for i in range(len(temp_readlines)):
-        split_values = temp_readlines[i].split(",")
-        date = split_values[0]
-        time = split_values[1]
-        temp = split_values[2]
-        temp_obj = {"date":date, "time":time, "temp":float(temp)}
-        temp_logs.append(temp_obj)
-    
-        temp_sort = sorted(temp_logs, key=lambda x:x["temp"], reverse=False)
+    with open('temp.csv', mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        line_count = 0
+
+        for row in csv_reader:
+            if line_count == 0:
+                line_count += 1
+            else:
+                temp_obj = {"date":row["date"], "time":row["time"], "temp":float(row["temp"])}
+                temp_logs.append(temp_obj)
+
+    # sort temp ascending
+    temp_sort = sorted(temp_logs, key=lambda x:x["temp"], reverse=False)
 
     # display date and temp in table
     for temp in temp_sort:
