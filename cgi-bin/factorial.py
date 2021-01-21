@@ -1,7 +1,7 @@
 #!/usr/bin/python3 
-
 import cgi,cgitb
-from datetime import *
+from os import ttyname
+import time
 cgitb.enable()
 body = ""
 
@@ -16,30 +16,43 @@ def generate_form():
           </form>
         """
     return form_body
+total = 1
 
-def factorial(n):
-  total = 1
-  for i in range(1,(int(n)+1)):
+def factorial():
+  global t
+  global total
+  global num
+  start = time.time()
+  for i in range(1,(int(num)+1)):
 	  total = total * i
-  return total
+  end =  time.time()
+  t = end-start
+  sec(t)
+def sec(t):
+  global total
+  global num
+  if t <= 10:
+    ans = total
+    return ans
+  else:
+    num = int(num) - 1000
+    total=1 
+    factorial()
+    return num
 
 if __name__ == "__main__":
-  form = cgi.FieldStorage()
-  num = form.getvalue('fnum')
-
   print("Content-Type: text/html")
   print("<html>")
   print()
   body += generate_form()
-
+  form = cgi.FieldStorage()
+  num = form.getvalue('fnum')
   if num != None:
-    start = datetime.now()
-    total = factorial(num)
-    end = datetime.now()
-
+    g = factorial()
+    answer = sec(t)
     # add result to body html
     body += """<h3>Total : {0} </h3>
             <h3>Total time spend : {1} sec </h3>
-            """.format(total ,(end-start).total_seconds())
-
+            <h3>number factorial : {2}  </h3>
+            """.format(answer ,t, num)
   print(body)
