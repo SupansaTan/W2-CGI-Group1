@@ -36,7 +36,7 @@ def write_file(temp):
     f.write(date_now + "," + time_now + "," + str(temp) + "\n")
     f.close()
 
-def read_file1():
+def read_file_Min_to_Max():
     f = open("temp.txt", "r")
     read = f.readlines()
     
@@ -79,7 +79,7 @@ def read_file1():
 
     return table_body
 
-def read_file2():
+def read_file_Max_to_Min():
     f = open("temp.txt", "r")
     read = f.readlines()
     
@@ -136,11 +136,8 @@ if __name__ == "__main__":
     print()
     body += generate_form()
     if test=="1":
-        body += read_file2()
+        body += read_file_Max_to_Min()
 
     else:
-        body += read_file1()
-
-        
-            
+        body += read_file_Min_to_Max()
     print(body)
