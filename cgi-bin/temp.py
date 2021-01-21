@@ -61,11 +61,10 @@ def read_file_max_to_min():
         csv_reader = csv.DictReader(csv_file)
 
         for row in csv_reader:
-            temp_obj = {"date":row["date"], "time":row["time"], "temp":float(row["temp"])}
-            temp_logs.append(temp_obj)
+            temp_logs.append(row)
     
     # sort temp descending (max to min)
-    temp_sort = sorted(temp_logs, key=lambda x:x["temp"], reverse=True)
+    temp_sort = sorted(temp_logs, key=lambda x:float(x["temp"]), reverse=True)
 
     # display date and temp in table
     for obj in temp_sort:
@@ -99,11 +98,10 @@ def read_file_min_to_max():
         csv_reader = csv.DictReader(csv_file)
 
         for row in csv_reader:
-            temp_obj = {"date":row["date"], "time":row["time"], "temp":float(row["temp"])}
-            temp_logs.append(temp_obj)
+            temp_logs.append(row)
 
     # sort temp ascending (min to max)
-    temp_sort = sorted(temp_logs, key=lambda x:x["temp"], reverse=False)
+    temp_sort = sorted(temp_logs, key=lambda x:float(x["temp"]), reverse=False)
 
     # display date and temp in table
     for temp in temp_sort:
