@@ -33,9 +33,14 @@ def write_file(temp):
     date_now = now.strftime("%d/%m/%Y")
     time_now = now.strftime("%H:%M:%S")
 
-    f = open("temp.txt", "a+")
-    f.write(date_now + "," + time_now + "," + str(temp) + "\n")
-    f.close()
+    with open('temp.csv', mode='a') as csv_file:
+        fieldnames = ['Date', 'Time', 'Temp']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        if csv_file == None:
+            writer.writeheader()
+            writer.writerow({'Date': date_now, 'Time':time_now , 'Temp': temp})
+        else:
+            writer.writerow({'Date': date_now, 'Time':time_now , 'Temp': temp})
 
 def read_file_max_to_min():
     # part of head table
