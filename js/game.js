@@ -55,28 +55,34 @@ function draw() {
     drawBall();
     drawPaddle();
 
-    if (x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+    if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
         dx = -dx;
     }
-    if (y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
+    if(y + dy < ballRadius) {
         dy = -dy;
     }
-
-    if(rightPressed) {
-        paddleX += 7;
-        if (paddleX + paddleWidth > canvas.width){
-            paddleX = canvas.width - paddleWidth;
+    else if(y + dy > canvas.height-ballRadius) {
+        if(x > paddleX && x < paddleX + paddleWidth) {
+            dy = -dy;
         }
-    }
-    else if(leftPressed) {
-        paddleX -= 7;
-        if (paddleX < 0){
-            paddleX = 0;
+        else {
+            alert("GAME OVER");
+            document.location.reload();
+            clearInterval(interval); // needed for Chrome to end game
         }
     }
     
+    if(rightPressed && paddleX < canvas.width-paddleWidth) {
+        // move right
+        paddleX += 7;
+    }
+    else if(leftPressed && paddleX > 0) {
+        // move left
+        paddleX -= 7;
+    }
+
     x += dx;
     y += dy;
 }
 
-setInterval(draw, 10);
+var interval = setInterval(draw, 10);
