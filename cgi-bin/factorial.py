@@ -28,6 +28,7 @@ def factorial():
   end =  time.time()
   t = end-start
   sec(t)
+  
 def sec(t):
   global total
   global num
