@@ -5,4 +5,4 @@ First webpage in `/cgi-bin/temp.py`
 First webpage in `/cgi-bin/factorial.py`
 
 ## MDN Breakout game
-First webpage in 'game.html'
+First webpage in `game.html`
