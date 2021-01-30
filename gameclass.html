@@ -218,13 +218,13 @@ function start(){
     myPad.hitPaddle();
     myBrick.hitBrick();
     myBrick.winCheck();
+    requestAnimationFrame(start)
 }
 
 let myBall=new Ball(canvas.width/2,canvas.height-30,10) 
 let myPad=new Paddle((canvas.width-75)/2,10,75)
 let myBrick=new Brick(3,5)
-var Interval=setInterval(start,10);
-
+start();
 </script>
 
 </body>
