@@ -15,27 +15,40 @@
 <script>
 	var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
+    var x = canvas.width/2;
+    var y = canvas.height-30;
     class Ball{
-    dx;
-    dy;
+    
     constructor(posX,posY,width){
-    this.posX=canvas.width/2;
-    this.posY=canvas.height-30;
+    this.posX=posX;
+    this.posY=posY;
     this.width=width;
     this.dx=2;
     this.dy=-2;
     }      
     draw()
     {
+    
     ctx.beginPath();
     ctx.arc(this.posX ,this.posY,this.width,0,Math.PI*2);
     ctx.fillStyle = "#0095DD";
     ctx.fill();
     ctx.closePath();
     }
+    move()
+    {
+    this.posX =this.posX+this.dx;
+    this.posY =this.posY+this.dy;    
+    
+    }
 }
-let myBall=new Ball(440,160,20)
-myBall.draw()
+function start()
+{
+myBall.move();
+myBall.draw();
+}
+let myBall=new Ball(x,y,10) 
+setInterval(start,10);
 </script>
 
 </body>
