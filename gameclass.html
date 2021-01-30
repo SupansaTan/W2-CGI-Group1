@@ -23,9 +23,13 @@
     var paddleX = (canvas.width-paddleWidth)/2;
     var rightPressed = false;
     var leftPressed = false;
+    
     document.addEventListener("keydown", keyDownHandler, false);
     document.addEventListener("keyup", keyUpHandler, false);
 
+    function reloadPage(){
+    location.reload();
+    }
     function keyDownHandler(e) {
         if(e.key == "Right" || e.key == "ArrowRight") {
         rightPressed = true;
@@ -52,6 +56,26 @@
             this.dx=2;
             this.dy=-2;
             }      
+        get speedy()
+        {
+            return this.dy;
+        }
+        set speedy(y)
+        {
+            this.dy=y;
+        }
+        get widthball()
+        {
+            return this.width
+        }
+        get positionx()
+        {
+            return this.posX;
+        }
+        get positiony()
+        {
+            return this.posY;
+        }
         draw()
             {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -71,13 +95,12 @@
             if(this.posX + this.dx > canvas.width-this.width || this.posX + this.dx < this.width) {
                 this.dx = -this.dx;
             }
-            if(this.posY + this.dy > canvas.height-this.width || this.posY + this.dy < this.width) {
+            if(this.posY + this.dy < this.width) {
                 this.dy = -this.dy;
             }
             }
         }
     class Paddle{
-        
         constructor(paddleX,paddleHeight,paddleWidth){
             this.paddleX=paddleX
             this.paddleHeight=paddleHeight
@@ -107,8 +130,16 @@
             }
         }
         }
+        hitPaddle()
+        {
+            if(myBall.positiony+myBall.speedy>canvas.height-myBall.widthball)
+            {
+                if(myBall.positionx > this.paddleX && myBall.positionx < this.paddleX + this.paddleWidth) {
+                    myBall.speedy = -myBall.speedy;
+                    }
+        }
     }
-    
+}
         
     
 
@@ -120,12 +151,12 @@ function start(){
     myBall.bouceBall();
     myPad.move();
     myBall.move();
-    
+    myPad.hitPaddle();
 }
 
 let myBall=new Ball(x,y,ballRadius) 
 let myPad=new Paddle(paddleX,paddleHeight,paddleWidth)
-setInterval(start,10);
+var Interval=setInterval(start,10);
 
 </script>
 
