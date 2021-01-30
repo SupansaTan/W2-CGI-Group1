@@ -18,6 +18,9 @@
     var x = canvas.width/2;
     var y = canvas.height-30;
     var ballRadius=10;
+    var paddleHeight = 10;
+    var paddleWidth = 75;
+    var paddleX = (canvas.width-paddleWidth)/2;
     class Ball{
     
         constructor(posX,posY,width){
@@ -51,15 +54,34 @@
             }
             }
         }
+    class Paddle{
+        constructor(paddleX,paddleHeight,paddleWidth){
+            this.paddleX=paddleX
+            this.paddleHeight=paddleHeight
+            this.paddleWidth=paddleWidth
+        }
+        
+        draw()
+        {
+            ctx.beginPath();
+            ctx.rect(this.paddleX, canvas.height-this.paddleHeight, this.paddleWidth, this.paddleHeight);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+    }
 function start(){
 
+    
     myBall.draw();
+    myPad.draw();
     myBall.bouceBall();
     myBall.move();
     
 }
 
 let myBall=new Ball(x,y,ballRadius) 
+let myPad=new Paddle(paddleX,paddleHeight,paddleWidth)
 setInterval(start,10);
 
 </script>
