@@ -57,7 +57,7 @@
                 ctx.font = "16px Arial";
                 ctx.fillStyle = "#0095DD";
                 ctx.fillText("Score: " + myBrick.brickScore, 8, 20);
-                
+                ctx.fillText("Lives: "+myPad.lives, canvas.width-65, 20);
             }
         }
     class Ball{
@@ -115,9 +115,10 @@
         }
     class Paddle{
         constructor(paddleX,paddleHeight,paddleWidth){
-            this.paddleX=paddleX
-            this.paddleHeight=paddleHeight
-            this.paddleWidth=paddleWidth
+            this.paddleX=paddleX;
+            this.paddleHeight=paddleHeight;
+            this.paddleWidth=paddleWidth;
+            this.lives=3;
         }
         
         draw()
@@ -152,9 +153,18 @@
                     }
                 else
                 {
-                    
-                    window.location.reload();
-                    alert("Game Over")
+                    this.lives--;
+                    if(!this.lives){
+                        window.location.reload();
+                        alert("Game Over")
+                    }
+                    else{
+                        myBall.posX=canvas.width/2;
+                        myBall.posY= canvas.height-30;
+                        myBall.speedy = -3;
+                        myBall.dx=3;
+                        this.paddleX = (canvas.width-this.paddleWidth)/2;
+                    }
                 }
         }
     }
