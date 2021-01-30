@@ -17,38 +17,51 @@
     var ctx = canvas.getContext("2d");
     var x = canvas.width/2;
     var y = canvas.height-30;
+    var ballRadius=10;
     class Ball{
     
-    constructor(posX,posY,width){
-    this.posX=posX;
-    this.posY=posY;
-    this.width=width;
-    this.dx=2;
-    this.dy=-2;
-    }      
-    draw()
-    {
+        constructor(posX,posY,width){
+            this.posX=posX;
+            this.posY=posY;
+            this.width=width;
+            this.dx=2;
+            this.dy=-2;
+            }      
+        draw()
+            {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.arc(this.posX ,this.posY,this.width,0,Math.PI*2);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+            }
+        move()
+            {
+            this.posX =this.posX+this.dx;
+            this.posY =this.posY+this.dy;    
+            }
+        bouceBall()
+            {
+            if(this.posX + this.dx > canvas.width-this.width || this.posX + this.dx < this.width) {
+                this.dx = -this.dx;
+            }
+            if(this.posY + this.dy > canvas.height-this.width || this.posY + this.dy < this.width) {
+                this.dy = -this.dy;
+            }
+            }
+        }
+function start(){
+
+    myBall.draw();
+    myBall.bouceBall();
+    myBall.move();
     
-    ctx.beginPath();
-    ctx.arc(this.posX ,this.posY,this.width,0,Math.PI*2);
-    ctx.fillStyle = "#0095DD";
-    ctx.fill();
-    ctx.closePath();
-    }
-    move()
-    {
-    this.posX =this.posX+this.dx;
-    this.posY =this.posY+this.dy;    
-    
-    }
 }
-function start()
-{
-myBall.move();
-myBall.draw();
-}
-let myBall=new Ball(x,y,10) 
+
+let myBall=new Ball(x,y,ballRadius) 
 setInterval(start,10);
+
 </script>
 
 </body>
