@@ -41,6 +41,25 @@
         leftPressed = false;
     }
     }
+    class BreakoutGame {
+            draw() {
+                myBall.draw();
+                myPad.draw();
+                myBrick.draw();
+                myBall.bouceBall();
+                myPad.move();
+                myBall.move();
+                myPad.hitPaddle();
+                myBrick.hitBrick();
+                myBrick.winCheck();
+            }
+            update() {
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "#0095DD";
+                ctx.fillText("Score: " + myBrick.brickScore, 8, 20);
+                
+            }
+        }
     class Ball{
     
         constructor(posX,posY,width){
@@ -206,21 +225,13 @@ class Brick{
         }
     }   
 
-function start(){
-    
-   
-    myBall.draw();
-    myPad.draw();
-    myBrick.draw();
-    myBall.bouceBall();
-    myPad.move();
-    myBall.move();
-    myPad.hitPaddle();
-    myBrick.hitBrick();
-    myBrick.winCheck();
+function start() {
+    game.draw();
+    game.update();
     requestAnimationFrame(start)
-}
 
+}
+let game = new  BreakoutGame;
 let myBall=new Ball(canvas.width/2,canvas.height-30,10) 
 let myPad=new Paddle((canvas.width-75)/2,10,75)
 let myBrick=new Brick(3,5)
