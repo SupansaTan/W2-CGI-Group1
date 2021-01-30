@@ -152,6 +152,7 @@ class Brick{
             this.brickoffsetLeft=30;
             this.brickX;
             this.brickY;
+            this.brickScore=0;
             this.bricks=[]
             for(var c=0;c<this.brickColumn;c++) {
                 this.bricks[c] = [];
@@ -188,12 +189,21 @@ class Brick{
                 && myBall.positiony > this.bricks[c][r].y &&myBall.positiony < this.bricks[c][r].y + this.brickHeight) {
                     myBall.speedy = -myBall.speedy;
                     this.bricks[c][r].status = 0;
+                    this.brickScore=this.brickScore+1;
                 }
             }
         }
     }
         }
     
+        winCheck()
+        {
+            
+            if(this.brickScore==this.brickRow*this.brickColumn){
+                window.location.reload();
+                alert("You are the Winner")
+            }
+        }
     }   
 
 function start(){
@@ -207,6 +217,7 @@ function start(){
     myBall.move();
     myPad.hitPaddle();
     myBrick.hitBrick();
+    myBrick.winCheck();
 }
 
 let myBall=new Ball(canvas.width/2,canvas.height-30,10) 
