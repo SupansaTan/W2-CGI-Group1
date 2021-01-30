@@ -21,6 +21,28 @@
     var paddleHeight = 10;
     var paddleWidth = 75;
     var paddleX = (canvas.width-paddleWidth)/2;
+    var rightPressed = false;
+    var leftPressed = false;
+    document.addEventListener("keydown", keyDownHandler, false);
+    document.addEventListener("keyup", keyUpHandler, false);
+
+    function keyDownHandler(e) {
+        if(e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = true;
+    }
+    else if(e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = true;
+    }
+    }
+
+    function keyUpHandler(e) {
+    if(e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = false;
+    }
+    else if(e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = false;
+    }
+    }
     class Ball{
     
         constructor(posX,posY,width){
@@ -55,6 +77,7 @@
             }
         }
     class Paddle{
+        
         constructor(paddleX,paddleHeight,paddleWidth){
             this.paddleX=paddleX
             this.paddleHeight=paddleHeight
@@ -69,13 +92,33 @@
             ctx.fill();
             ctx.closePath();
         }
+        move()
+        {
+            if(rightPressed) {
+            this.paddleX += 7;
+            if (this.paddleX + this.paddleWidth > canvas.width){
+                this.paddleX = canvas.width - this.paddleWidth;
+            }
+            }
+            else if(leftPressed) {
+            this.paddleX -= 7;
+            if (this.paddleX < 0){
+                this.paddleX = 0;
+            }
+        }
+        }
     }
-function start(){
+    
+        
+    
 
+function start(){
+    
     
     myBall.draw();
     myPad.draw();
     myBall.bouceBall();
+    myPad.move();
     myBall.move();
     
 }
