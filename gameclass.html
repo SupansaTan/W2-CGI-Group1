@@ -146,22 +146,61 @@
         }
     }
 }
-        
-    
+
+class Brick{
+        constructor(brickRow,brickColumn){
+            this.brickRow=brickRow
+            this.brickColumn=brickColumn
+            this.brickWidth=75
+            this.brickHeight=20
+            this.brickPadding=10;
+            this.brickoffsetTop=30;
+            this.brickoffsetLeft=30;
+            this.brickX;
+            this.brickY;
+            this.bricks=[]
+            for(var c=0;c<this.brickColumn;c++) {
+                this.bricks[c] = [];
+                for(var r=0;r<this.brickRow;r++) {
+                this.bricks[c][r] = {x:0,y:0};
+            }
+        }
+        }
+        draw()
+        {
+            for(var c=0;c<this.brickColumn;c++){
+                for(var r=0;r<this.brickRow;r++){
+                    this.brickX = (c*(this.brickWidth+this.brickPadding))+this.brickoffsetLeft;
+                    this.brickY = (r*(this.brickHeight+this.brickPadding))+this.brickoffsetTop;
+                    this.bricks[c][r].x = this.brickX;
+                    this.bricks[c][r].y = this.brickY;
+                    ctx.beginPath();
+                    ctx.rect(this.brickX, this.brickY, this.brickWidth, this.brickHeight);
+                    ctx.fillStyle = "#0095DD";
+                    ctx.fill();
+                    ctx.closePath();
+                    
+                }
+            }
+        }
+    }   
 
 function start(){
     
     
     myBall.draw();
     myPad.draw();
+    myBrick.draw();
     myBall.bouceBall();
     myPad.move();
     myBall.move();
     myPad.hitPaddle();
+   
 }
 
 let myBall=new Ball(x,y,ballRadius) 
 let myPad=new Paddle(paddleX,paddleHeight,paddleWidth)
+let myBrick=new Brick(3,5)
 var Interval=setInterval(start,10);
 
 </script>
