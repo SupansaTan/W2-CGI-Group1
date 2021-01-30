@@ -137,6 +137,12 @@
                 if(myBall.positionx > this.paddleX && myBall.positionx < this.paddleX + this.paddleWidth) {
                     myBall.speedy = -myBall.speedy;
                     }
+                else
+                {
+                    
+                    window.location.reload();
+                    alert("Game Over")
+                }
         }
     }
 }
