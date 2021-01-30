@@ -15,12 +15,6 @@
 <script>
 	var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
-    var x = canvas.width/2;
-    var y = canvas.height-30;
-    var ballRadius=10;
-    var paddleHeight = 10;
-    var paddleWidth = 75;
-    var paddleX = (canvas.width-paddleWidth)/2;
     var rightPressed = false;
     var leftPressed = false;
     
@@ -190,7 +184,8 @@ class Brick{
                 for (var r = 0; r < this.brickRow; r++) {
             
             if (this.bricks[c][r].status == 1) {
-                if (myBall.positionx > this.bricks[c][r].x && myBall.positionx < this.bricks[c][r].x + this.brickWidth && myBall.positiony > this.bricks[c][r].y &&myBall.positiony < this.bricks[c][r].y + this.brickHeight) {
+                if (myBall.positionx > this.bricks[c][r].x && myBall.positionx < this.bricks[c][r].x + this.brickWidth 
+                && myBall.positiony > this.bricks[c][r].y &&myBall.positiony < this.bricks[c][r].y + this.brickHeight) {
                     myBall.speedy = -myBall.speedy;
                     this.bricks[c][r].status = 0;
                 }
@@ -214,8 +209,8 @@ function start(){
     myBrick.hitBrick();
 }
 
-let myBall=new Ball(x,y,ballRadius) 
-let myPad=new Paddle(paddleX,paddleHeight,paddleWidth)
+let myBall=new Ball(canvas.width/2,canvas.height-30,10) 
+let myPad=new Paddle((canvas.width-75)/2,10,75)
 let myBrick=new Brick(3,5)
 var Interval=setInterval(start,10);
 
