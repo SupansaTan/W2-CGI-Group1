@@ -17,33 +17,6 @@
     var ctx = canvas.getContext("2d");
     var rightPressed = false;
     var leftPressed = false;
-    
-    document.addEventListener("keydown", keyDownHandler, false);
-    document.addEventListener("keyup", keyUpHandler, false);
-
-    function keyDownHandler(e) 
-    {
-        if(e.key == "Right" || e.key == "ArrowRight") 
-        {
-            rightPressed = true;
-        }
-        else if(e.key == "Left" || e.key == "ArrowLeft") 
-        {
-            leftPressed = true;
-        }
-    }
-
-    function keyUpHandler(e) 
-    {
-        if(e.key == "Right" || e.key == "ArrowRight") 
-        {
-            rightPressed = false;
-        }
-        else if(e.key == "Left" || e.key == "ArrowLeft") 
-        {
-            leftPressed = false;
-        }
-    }
 
     class Ball
     {
@@ -191,7 +164,50 @@
             }
             return false;
         }
-    }   
+    }
+    
+    class InputProcessor
+    {
+        addEvent()
+        {
+            document.addEventListener("keydown", this.keyDownHandler, false);
+            document.addEventListener("keyup", this.keyUpHandler, false);
+            document.addEventListener("mousemove", this.mouseMoveHandler, false);
+        }
+
+        keyDownHandler(e) 
+        {
+            if(e.key == "Right" || e.key == "ArrowRight") 
+            {
+                rightPressed = true;
+            }
+            else if(e.key == "Left" || e.key == "ArrowLeft") 
+            {
+                leftPressed = true;
+            }
+        }
+
+        keyUpHandler(e) 
+        {
+            if(e.key == "Right" || e.key == "ArrowRight") 
+            {
+                rightPressed = false;
+            }
+            else if(e.key == "Left" || e.key == "ArrowLeft") 
+            {
+                leftPressed = false;
+            }
+        }
+
+        mouseMoveHandler(e) 
+        {
+            var relativeX = e.clientX - canvas.offsetLeft;
+            if (relativeX > 0 && relativeX < canvas.width) // when mouseX in canvas
+            {
+                game.paddle.posX = relativeX - game.paddle.width/2; // set paddle at mouse position
+            }
+        }
+    }
 
     class BreakoutGame 
     {
@@ -200,6 +216,7 @@
             this.ball = new Ball(canvas.width/2, canvas.height-30, 10)
             this.paddle = new Paddle((canvas.width-75)/2, 10, 75)
             this.brick = new Brick(3,5)
+            this.inputProcessor = new InputProcessor()
             this.lives = 3;
             this.score = 0;
         }
@@ -211,6 +228,7 @@
             this.brick.draw();
             this.paddle.move();
             this.ball.move();
+            this.inputProcessor.addEvent();
             this.collisionDetection();
         }
 
