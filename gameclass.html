@@ -13,15 +13,15 @@
 <canvas id="myCanvas" width="480" height="320"></canvas>
 
 <script>
-	var canvas = document.getElementById("myCanvas");
-    var ctx = canvas.getContext("2d");
-    var rightPressed = false;
-    var leftPressed = false;
+    leftPressed = false;
+    rightPressed = false;
 
     class Ball
     {
         constructor(posX,posY,w)
         {
+            this.canvas = document.getElementById("myCanvas");
+            this.ctx = this.canvas.getContext("2d");
             this.posX = posX;
             this.posY = posY;
             this.width = w;
@@ -31,12 +31,12 @@
 
         draw()
         {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.beginPath();
-            ctx.arc(this.posX ,this.posY,this.width,0,Math.PI*2);
-            ctx.fillStyle = "#0095DD";
-            ctx.fill();
-            ctx.closePath();
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.beginPath();
+            this.ctx.arc(this.posX ,this.posY,this.width,0,Math.PI*2);
+            this.ctx.fillStyle = "#0095DD";
+            this.ctx.fill();
+            this.ctx.closePath();
         }
 
         move()
@@ -50,6 +50,8 @@
     {
         constructor(paddleX, paddleHeight, paddleWidth)
         {
+            this.canvas = document.getElementById("myCanvas");
+            this.ctx = this.canvas.getContext("2d");
             this.posX = paddleX;
             this.height = paddleHeight;
             this.width = paddleWidth;
@@ -57,24 +59,24 @@
         
         draw()
         {
-            ctx.beginPath();
-            ctx.rect(this.posX, canvas.height-this.height, this.width, this.height);
-            ctx.fillStyle = "#0095DD";
-            ctx.fill();
-            ctx.closePath();
+            this.ctx.beginPath();
+            this.ctx.rect(this.posX, this.canvas.height-this.height, this.width, this.height);
+            this.ctx.fillStyle = "#0095DD";
+            this.ctx.fill();
+            this.ctx.closePath();
         }
 
         move()
         {
-            if(rightPressed) 
+            if (rightPressed) 
             {
                 this.posX += 7;
-                if (this.posX + this.width > canvas.width) // when paddle over the border right of canvas
+                if (this.posX + this.width > this.canvas.width) // when paddle over the border right of canvas
                 {
-                    this.posX = canvas.width - this.width; // set paddle at right
+                    this.posX = this.canvas.width - this.width; // set paddle at right
                 }
             }
-            else if(leftPressed) 
+            else if (leftPressed) 
             {
                 this.posX -= 7;
                 if (this.posX < 0) // when paddle over the border left of canvas
@@ -99,6 +101,8 @@
     {
         constructor(brickRow, brickColumn)
         {
+            this.canvas = document.getElementById("myCanvas");
+            this.ctx = this.canvas.getContext("2d");
             this.row = brickRow
             this.column = brickColumn
             this.width = 75
@@ -111,12 +115,12 @@
 
             // build bricks
             this.bricks = []
-            for(var c=0;c<this.column;c++) 
+            for(var c=0;c<this.column;c++)
             {
                 this.bricks[c] = [];
                 for(var r=0; r<this.row; r++) 
                 {
-                this.bricks[c][r] = {x:0, y:0, status:1};
+                    this.bricks[c][r] = {x:0, y:0, status:1};
                 }
             }
         }
@@ -127,17 +131,17 @@
             {
                 for(var r=0; r<this.row; r++)
                 {
-                    if (this.bricks[c][r].status == 1) 
+                    if (this.bricks[c][r].status == 1)  // if bricks remain
                     {
                         this.posX = (c*(this.width+this.padding))+this.offsetLeft;
                         this.posY = (r*(this.height+this.padding))+this.offsetTop;
                         this.bricks[c][r].x = this.posX;
                         this.bricks[c][r].y = this.posY;
-                        ctx.beginPath();
-                        ctx.rect(this.posX, this.posY, this.width, this.height);
-                        ctx.fillStyle = "#0095DD";
-                        ctx.fill();
-                        ctx.closePath();
+                        this.ctx.beginPath();
+                        this.ctx.rect(this.posX, this.posY, this.width, this.height);
+                        this.ctx.fillStyle = "#0095DD";
+                        this.ctx.fill();
+                        this.ctx.closePath();
                     }
                 }
             }
@@ -201,7 +205,9 @@
 
         mouseMoveHandler(e) 
         {
-            var relativeX = e.clientX - canvas.offsetLeft;
+            var canvas = document.getElementById("myCanvas");
+            var relativeX = e.clientX - canvas.offsetLeft; 
+
             if (relativeX > 0 && relativeX < canvas.width) // when mouseX in canvas
             {
                 game.paddle.posX = relativeX - game.paddle.width/2; // set paddle at mouse position
@@ -213,10 +219,13 @@
     {
         constructor() 
         {
-            this.ball = new Ball(canvas.width/2, canvas.height-30, 10)
-            this.paddle = new Paddle((canvas.width-75)/2, 10, 75)
+            this.canvas = document.getElementById("myCanvas");
+            this.ctx = this.canvas.getContext("2d");
+            this.ball = new Ball(this.canvas.width/2, this.canvas.height-30, 10)
+            this.paddle = new Paddle((this.canvas.width-75)/2, 10, 75)
             this.brick = new Brick(3,5)
             this.inputProcessor = new InputProcessor()
+            this.inputProcessor.addEvent();
             this.lives = 3;
             this.score = 0;
         }
@@ -228,21 +237,20 @@
             this.brick.draw();
             this.paddle.move();
             this.ball.move();
-            this.inputProcessor.addEvent();
             this.collisionDetection();
         }
 
         updateGame() 
         {
-            ctx.font = "16px Arial";
-            ctx.fillStyle = "#0095DD";
-            ctx.fillText("Score: " + this.score, 8, 20);
-            ctx.fillText("Lives: "+ this.lives, canvas.width-65, 20);
+            this.ctx.font = "16px Arial";
+            this.ctx.fillStyle = "#0095DD";
+            this.ctx.fillText("Score: " + this.score, 8, 20);
+            this.ctx.fillText("Lives: "+ this.lives, this.canvas.width-65, 20);
         }
 
         collisionDetection()
         {
-            if (this.ball.posY+this.ball.dy > canvas.height-this.ball.width)
+            if (this.ball.posY+this.ball.dy > this.canvas.height-this.ball.width)
             {
                 // the ball bounce when hit the paddle 
                 if(this.paddle.hitPaddle(this.ball.posX))
@@ -262,11 +270,11 @@
                     else
                     {
                         // set position of the ball and the paddle at the start position
-                        this.ball.posX = canvas.width/2;
-                        this.ball.posY = canvas.height-30;
+                        this.ball.posX = this.canvas.width/2;
+                        this.ball.posY = this.canvas.height-30;
                         this.ball.dy = -3;
                         this.ball.dx = 3;
-                        this.paddle.posX = (canvas.width-this.paddle.width)/2;
+                        this.paddle.posX = (this.canvas.width-this.paddle.width)/2;
                     }
                 }
             }
@@ -279,11 +287,13 @@
                 this.winCheck();
             }
 
-            // when the ball hit the border of canvas
-            if (this.ball.posX + this.ball.dx > canvas.width-this.ball.width || this.ball.posX + this.ball.dx < this.ball.width)
+            // when the ball hit the left or right border of canvas
+            if (this.ball.posX + this.ball.dx > this.canvas.width-this.ball.width || this.ball.posX + this.ball.dx < this.ball.width)
             {
                 this.ball.dx = -this.ball.dx;
             }
+
+            // when the ball hit the top border of canvas
             if (this.ball.posY + this.ball.dy < this.ball.width) 
             {
                 this.ball.dy = -this.ball.dy;
@@ -308,7 +318,7 @@ function start()
     requestAnimationFrame(start)
 }
 
-let game = new  BreakoutGame;
+let game = new BreakoutGame();
 start();
 
 </script>
