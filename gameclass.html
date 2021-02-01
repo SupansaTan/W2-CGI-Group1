@@ -312,8 +312,9 @@
         {
             if (this.score == this.brick.row*this.brick.column)
             {
-                window.location.reload();
-                alert("You are the Winner")
+                //ถ้ากำแพงถูกทำลายทั้งหมด  
+                alert("You are the Winner") //แสดงกล่องข้อความเเจ้งเตือนว่าชนะ
+                window.location.reload(); // เรื่มเกมใหม่
             }
         }
     }
