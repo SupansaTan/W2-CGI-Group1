@@ -172,7 +172,7 @@
             document.addEventListener("keydown", this.keyDownHandler, false);
             document.addEventListener("mousemove", this.mouseMoveHandler, false);
         }
-
+        
         keyDownHandler(e) 
         {
             if(e.key == "Right" || e.key == "ArrowRight") 
@@ -220,6 +220,7 @@
             this.ball.move();
             this.collisionDetection();
             this.updateGame();
+            requestAnimationFrame(()=>this.draw());
         }
 
         updateGame() 
@@ -296,7 +297,6 @@
 function start() 
 {
     game.draw();
-    requestAnimationFrame(start);
 }
 
 let game = new BreakoutGame();
