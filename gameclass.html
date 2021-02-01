@@ -26,7 +26,7 @@
             this.dy = -2;
         }      
 
-        draw()
+        draw() //วาดบอล
         {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.beginPath();
@@ -54,7 +54,7 @@
             this.width = paddleWidth;
         }
         
-        draw()
+        draw() //วาดไม้
         {
             this.ctx.beginPath();
             this.ctx.rect(this.posX, this.canvas.height-this.height, this.width, this.height);
@@ -108,7 +108,7 @@
             this.posX;
             this.posY;
 
-            // build bricks
+            // สร้าง bricks ตามเเนว column เเละ row
             this.bricks = []
             for(var c=0;c<this.column;c++)
             {
@@ -144,6 +144,7 @@
 
         hitBrick(posX, posY)
         {
+            
             for (var c= 0; c < this.column; c++)
             {
                 for (var r = 0; r < this.row; r++) 
@@ -169,16 +170,18 @@
     {
         addEvent()
         {
-            document.addEventListener("keydown", this.keyDownHandler, false);
+            document.addEventListener("keydown", this.keyDownHandler);
             document.addEventListener("mousemove", this.mouseMoveHandler, false);
         }
         
         keyDownHandler(e) 
         {
+            // เมื่อกดปุ่มขวา
             if(e.key == "Right" || e.key == "ArrowRight") 
             {
                 game.paddle.moveRight();
             }
+            //เมื่อกดปุ่มซ้าย
             else if(e.key == "Left" || e.key == "ArrowLeft") 
             {
                 game.paddle.moveLeft();
@@ -188,6 +191,7 @@
         mouseMoveHandler(e) 
         {
             var canvas = document.getElementById("myCanvas");
+            // เมื่อ mouseX อยู่ใน canvas
             var relativeX = e.clientX - canvas.offsetLeft; 
 
             if (relativeX > 0 && relativeX < canvas.width) // when mouseX in canvas
@@ -223,7 +227,7 @@
             requestAnimationFrame(()=>this.draw());
         }
 
-        updateGame() 
+        updateGame() // แสดงคะเเนนกับชีวิตผู้เล่น
         {
             this.ctx.font = "16px Arial";
             this.ctx.fillStyle = "#0095DD";
@@ -233,6 +237,7 @@
 
         collisionDetection()
         {
+            //ตรวจสอบการชนของลูกบอล
             if (this.ball.posY+this.ball.dy > this.canvas.height-this.ball.width)
             {
                 // the ball bounce when hit the paddle 
@@ -287,20 +292,16 @@
         {
             if (this.score == this.brick.row*this.brick.column)
             {
-                window.location.reload();
-                alert("You are the Winner")
+                //ถ้ากำแพงถูกทำลายทั้งหมด  
+                alert("You are the Winner") //แสดงกล่องข้อความเเจ้งเตือนว่าชนะ
+                window.location.reload(); // เรื่มเกมใหม่
             }
         }
     }
 
 
-function start() 
-{
-    game.draw();
-}
-
 let game = new BreakoutGame();
-start();
+game.draw();
 
 </script>
 
