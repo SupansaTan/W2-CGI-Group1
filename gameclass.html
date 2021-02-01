@@ -26,7 +26,7 @@
             this.dy = -2;
         }      
 
-        draw()
+        draw() //วาดบอล
         {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.beginPath();
@@ -54,7 +54,7 @@
             this.width = paddleWidth;
         }
         
-        draw()
+        draw() //วาดไม้
         {
             this.ctx.beginPath();
             this.ctx.rect(this.posX, this.canvas.height-this.height, this.width, this.height);
@@ -108,7 +108,7 @@
             this.posX;
             this.posY;
 
-            // build bricks
+            // สร้าง bricks ตามเเนว column เเละ row
             this.bricks = []
             for(var c=0;c<this.column;c++)
             {
@@ -144,6 +144,7 @@
 
         hitBrick(posX, posY)
         {
+            
             for (var c= 0; c < this.column; c++)
             {
                 for (var r = 0; r < this.row; r++) 
@@ -167,32 +168,55 @@
     
     class InputProcessor
     {
+        constructor()
+        {
+            this.canvas = document.getElementById("myCanvas");
+            this.ctx = this.canvas.getContext("2d");
+            this.paddle = new Paddle((this.canvas.width-75)/2, 10, 75);
+        }
+
         addEvent()
         {
-            document.addEventListener("keydown", this.keyDownHandler, false);
+            document.addEventListener("keydown", this.keyDownHandler);
+            document.addEventListener("keydown", this.keyUpHandler,false);
             document.addEventListener("mousemove", this.mouseMoveHandler, false);
         }
 
         keyDownHandler(e) 
         {
+            // เมื่อกดปุ่มขวา
             if(e.key == "Right" || e.key == "ArrowRight") 
+            {
+                game.paddle.moveLeft();
+            }
+            //เมื่อกดปุ่มซ้าย
+            else if(e.key == "Left" || e.key == "ArrowLeft") 
             {
                 game.paddle.moveRight();
             }
+        }
+        // เมื่อปล่อยปุ่ม
+        keyUpHandler(e) 
+        {
+            if(e.key == "Right" || e.key == "ArrowRight") 
+            {
+                rightPressed = false;
+            }
             else if(e.key == "Left" || e.key == "ArrowLeft") 
             {
-                game.paddle.moveLeft();
+                leftPressed = false;
             }
         }
 
         mouseMoveHandler(e) 
         {
             var canvas = document.getElementById("myCanvas");
+            // เมื่อ mouseX อยู่ใน canvas
             var relativeX = e.clientX - canvas.offsetLeft; 
 
-            if (relativeX > 0 && relativeX < canvas.width) // when mouseX in canvas
+            if (relativeX > 0 && relativeX < this.canvas.width) // when mouseX in canvas
             {
-                game.paddle.posX = relativeX - game.paddle.width/2; // set paddle at mouse position
+                this.paddle.posX = relativeX - this.paddle.width/2; // set paddle at mouse position
             }
         }
     }
@@ -204,7 +228,7 @@
             this.canvas = document.getElementById("myCanvas");
             this.ctx = this.canvas.getContext("2d");
             this.ball = new Ball(this.canvas.width/2, this.canvas.height-30, 10)
-            this.paddle = new Paddle((this.canvas.width-75)/2, 10, 75)
+            //this.paddle = new Paddle((this.canvas.width-75)/2, 10, 75)
             this.brick = new Brick(3,5)
             this.inputProcessor = new InputProcessor()
             this.inputProcessor.addEvent();
@@ -215,14 +239,15 @@
         draw() 
         {
             this.ball.draw();
-            this.paddle.draw();
+            this.inputProcessor.paddle.draw();
             this.brick.draw();
+            //this.paddle.move();
             this.ball.move();
             this.collisionDetection();
-            this.updateGame();
+            
         }
 
-        updateGame() 
+        updateGame() // แสดงคะเเนนกับชีวิตผู้เล่น
         {
             this.ctx.font = "16px Arial";
             this.ctx.fillStyle = "#0095DD";
@@ -232,10 +257,11 @@
 
         collisionDetection()
         {
+            //ตรวจสอบการชนของลูกบอล
             if (this.ball.posY+this.ball.dy > this.canvas.height-this.ball.width)
             {
                 // the ball bounce when hit the paddle 
-                if(this.paddle.hitPaddle(this.ball.posX))
+                if(this.inputProcessor.paddle.hitPaddle(this.ball.posX))
                 {
                     this.ball.dy = -this.ball.dy;
                 }
@@ -256,7 +282,7 @@
                         this.ball.posY = this.canvas.height-30;
                         this.ball.dy = -3;
                         this.ball.dx = 3;
-                        this.paddle.posX = (this.canvas.width-this.paddle.width)/2;
+                        this.inputProcessor.paddle.posX = (this.canvas.width-this.inputProcessor.paddle.width)/2;
                     }
                 }
             }
@@ -296,7 +322,7 @@
 function start() 
 {
     game.draw();
-    requestAnimationFrame(start);
+    requestAnimationFrame(start)
 }
 
 let game = new BreakoutGame();
