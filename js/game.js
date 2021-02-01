@@ -65,7 +65,7 @@ function keyUpHandler(e) {
 
 function mouseMoveHandler(e) {
     var relativeX = e.clientX - canvas.offsetLeft;
-// ตรวจสอบว่า mouseX อยู่ใน  canvas หรือไม่
+    // เมื่อ mouseX อยู่ใน canvas
     if (relativeX > 0 && relativeX < canvas.width) {
         paddleX = relativeX - paddleWidth/2; //เลื่อน paddle ไปอยู่ที่ตำแหน่ง mouse
     }

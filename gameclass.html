@@ -13,9 +13,6 @@
 <canvas id="myCanvas" width="480" height="320"></canvas>
 
 <script>
-    leftPressed = false;
-    rightPressed = false;
-
     class Ball
     {
         constructor(posX,posY,w)
@@ -66,23 +63,21 @@
             this.ctx.closePath();
         }
 
-        move()
+        moveLeft()
         {
-            if (rightPressed) 
+            this.posX -= 7;
+            if (this.posX < 0) // when paddle over the border left of canvas
             {
-                this.posX += 7;
-                if (this.posX + this.width > this.canvas.width) // when paddle over the border right of canvas
-                {
-                    this.posX = this.canvas.width - this.width; // set paddle at right
-                }
+                this.posX = 0; // set paddle at left
             }
-            else if (leftPressed) 
+        }
+
+        moveRight()
+        {
+            this.posX += 7;
+            if (this.posX + this.width > this.canvas.width) // when paddle over the border right of canvas
             {
-                this.posX -= 7;
-                if (this.posX < 0) // when paddle over the border left of canvas
-                {
-                    this.posX = 0; // set paddle at left
-                }
+                this.posX = this.canvas.width - this.width; // set paddle at right
             }
         }
 
@@ -175,7 +170,6 @@
         addEvent()
         {
             document.addEventListener("keydown", this.keyDownHandler, false);
-            document.addEventListener("keyup", this.keyUpHandler, false);
             document.addEventListener("mousemove", this.mouseMoveHandler, false);
         }
 
@@ -183,23 +177,11 @@
         {
             if(e.key == "Right" || e.key == "ArrowRight") 
             {
-                rightPressed = true;
+                game.paddle.moveRight();
             }
             else if(e.key == "Left" || e.key == "ArrowLeft") 
             {
-                leftPressed = true;
-            }
-        }
-
-        keyUpHandler(e) 
-        {
-            if(e.key == "Right" || e.key == "ArrowRight") 
-            {
-                rightPressed = false;
-            }
-            else if(e.key == "Left" || e.key == "ArrowLeft") 
-            {
-                leftPressed = false;
+                game.paddle.moveLeft();
             }
         }
 
@@ -235,9 +217,9 @@
             this.ball.draw();
             this.paddle.draw();
             this.brick.draw();
-            this.paddle.move();
             this.ball.move();
             this.collisionDetection();
+            this.updateGame();
         }
 
         updateGame() 
@@ -314,8 +296,7 @@
 function start() 
 {
     game.draw();
-    game.updateGame();
-    requestAnimationFrame(start)
+    requestAnimationFrame(start);
 }
 
 let game = new BreakoutGame();
