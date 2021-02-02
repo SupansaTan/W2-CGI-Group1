@@ -106,17 +106,48 @@
         {
             this.canvas = document.getElementById("canvas");
             this.ctx = this.canvas.getContext("2d");
-            this.posX;
-            this.posY;
-            this.width;
+            this.width = 10
+            this.height = 10
+            this.row = 6
+            this.column = 13
+            this.padding = 52;
+            this.offsetTop = 56;
+            this.offsetLeft = 26;
+            this.posX ;
+            this.posY ;
 
             // create foods
             this.foods = [];
+            for(var c=0;c<this.column;c++)
+            {
+                this.foods[c] = [];
+                for(var r=0; r<this.row; r++) 
+                {
+                    this.foods[c][r] = {x:0, y:0, status:1};
+                }
+            }
         }
 
         draw()
         {
-
+            for(var c=0; c<this.column; c++)
+            {
+                for(var r=0; r<this.row; r++)
+                {
+                    if (this.foods[c][r].status == 1)  // if bricks remain
+                    {
+                        this.X = (c*(this.width+this.padding))+this.offsetLeft;
+                        this.Y = (r*(this.height+this.padding))+this.offsetTop;
+                        this.foods[c][r].x = this.X;
+                        this.foods[c][r].y = this.Y;
+                        this.ctx.beginPath();
+                        this.ctx.rect(this.X, this.Y, this.width, this.height);
+                        this.ctx.fillStyle = "white";
+                        this.ctx.fill();
+                        this.ctx.closePath();
+                    }
+                }
+            }
         }
 
         eated()
@@ -221,6 +252,7 @@
             this.pacMan = new Pacman((this.canvas.width/2)+4, this.canvas.height-30, 15);
             this.wall = new Wall();
             this.ghost = new Ghost();
+            this.food = new Food();
             this.inputProcessor = new InputProcessor();
             this.inputProcessor.addEvent();
         }
@@ -228,6 +260,7 @@
         draw()
         {
             this.pacMan.draw();
+            this.food.draw();
             this.wall.draw();
             requestAnimationFrame(()=>this.draw());
         }
