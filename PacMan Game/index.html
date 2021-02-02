@@ -131,15 +131,43 @@
         {
             this.canvas = document.getElementById("canvas");
             this.ctx = this.canvas.getContext("2d");
+            this.row = 2
+            this.column = 3
+            this.width = 248
+            this.height = 124
+            this.padding = 62;
+            this.offsetTop = 30;
             this.posX;
             this.posY;
-            this.width;
-            this.height;
+            this.walls = []
+            for(var c=0;c<this.column;c++)
+            {
+                this.walls[c] = [];
+                for(var r=0; r<this.row; r++) 
+                {
+                    this.walls[c][r] = {x:0, y:0};
+                }
+            }
         }
-
         draw()
         {
-
+            for(var c=0; c<this.column; c++)
+            {
+                for(var r=0; r<this.row; r++)
+                {
+                    
+                        this.wx = (c*(this.width+this.padding));
+                        this.wy = (r*(this.height+this.padding)+this.offsetTop);
+                        this.walls[c][r].x = this.wx;
+                        this.walls[c][r].y = this.wy;
+                        this.ctx.beginPath();
+                        this.ctx.rect(this.wx, this.wy, this.width, this.height);
+                        this.ctx.fillStyle = "green";
+                        this.ctx.fill();
+                        this.ctx.closePath();
+                    
+                }
+            }
         }
 
         hitWall(x, y)
@@ -200,6 +228,7 @@
         draw()
         {
             this.pacMan.draw();
+            this.wall.draw();
             requestAnimationFrame(()=>this.draw());
         }
 
