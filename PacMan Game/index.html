@@ -27,6 +27,7 @@
 
         draw()
         {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.beginPath();
             this.ctx.arc(this.posX ,this.posY,this.width,0,Math.PI*2);
             this.ctx.fillStyle = 'yellow';
@@ -36,22 +37,38 @@
 
         moveLeft()
         {
-
+            this.posX -= 62;
+            if (this.posX-this.width < 0) // when paddle over the border left of canvas
+            {
+                this.posX = 32; // set paddle at left
+            }
         }
 
         moveRight()
         {
-
+            this.posX += 62;
+            if (this.posX + (this.width+5) > this.canvas.width) // when paddle over the border right of canvas
+            {
+                this.posX = this.canvas.width - (this.width+9); // set paddle at right
+            }
         }
 
         moveUp()
         {
-
+            this.posY -= 62;
+            if (this.posY-(this.width+30) < 0) // when paddle over the border left of canvas
+            {
+                this.posY = 60; // set paddle at left
+            }
         }
 
         moveDown()
         {
-
+            this.posY += 62;
+            if (this.posY + (this.width+5) > this.canvas.height) // when paddle over the border right of canvas
+            {
+                this.posY = this.canvas.height-30 // set paddle at right
+            }
         }
     }
 
@@ -143,19 +160,19 @@
         {
             if (e.key == "d" || e.key == "ArrowRight" || e.key == "Right")
             {
-                
+                game.pacMan.moveRight();
             }
             else if (e.key == "a" || e.key == "ArrowLeft" || e.key == "Left")
             {
-                
+                game.pacMan.moveLeft();
             }
             else if (e.key == "w" || e.key == "ArrowUp")
             {
-                
+                game.pacMan.moveUp();
             }
             else if (e.key == "s" || e.key == "ArrowDown")
             {
-                
+                game.pacMan.moveDown();
             }
         }
 
