@@ -278,19 +278,23 @@
             this.food.draw();
             this.wall.draw();
             this.collisionDetection();
+            this.updateGame();
             requestAnimationFrame(()=>this.draw());
         }
 
         updateGame()
         {
-            
+            this.ctx.font = "16px Arial";
+            this.ctx.fillStyle = "white";
+            this.ctx.fillText("Score: " + this.score, 8, 20);
+            this.ctx.fillText("Lives: "+ this.lives, this.canvas.width-65, 20);
         }
 
         collisionDetection()
         {
             if (this.food.eated(this.pacMan.posX, this.pacMan.posY))
             {
-                
+                this.score += 1;
             }
         }
     }
