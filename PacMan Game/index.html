@@ -15,19 +15,23 @@
 <script>
     class Pacman
     {
-        constructor()
+        constructor(posX,posY,width)
         {
             this.canvas = document.getElementById("canvas");
             this.ctx = this.canvas.getContext("2d");
-            this.posX;
-            this.posY;
+            this.posX = posX;
+            this.posY = posY;
+            this.width = width;
             this.speed;
-            this.width;
         }
 
         draw()
         {
-
+            this.ctx.beginPath();
+            this.ctx.arc(this.posX ,this.posY,this.width,0,Math.PI*2);
+            this.ctx.fillStyle = 'yellow';
+            this.ctx.fill();
+            this.ctx.closePath();
         }
 
         moveLeft()
@@ -165,9 +169,11 @@
     {
         constructor()
         {
+            this.canvas = document.getElementById("canvas");
+            this.ctx = this.canvas.getContext("2d");
             this.lives = 3;
             this.score = 0;
-            this.pacMan = new Pacman();
+            this.pacMan = new Pacman((this.canvas.width/2)+4, this.canvas.height-30, 15);
             this.wall = new Wall();
             this.ghost = new Ghost();
             this.inputProcessor = new InputProcessor();
@@ -176,6 +182,7 @@
 
         draw()
         {
+            this.pacMan.draw();
             requestAnimationFrame(()=>this.draw());
         }
 
@@ -190,8 +197,8 @@
         }
     }
 
-    game = new Game();
-    game.draw();
+let game = new Game();
+game.draw();
 </script>
 </body>
 </html>
