@@ -150,9 +150,24 @@
             }
         }
 
-        eated()
+        eated(posX,posY)
         {
-
+            for (var c= 0; c < this.column; c++)
+            {
+                for (var r = 0; r < this.row; r++) 
+                {
+                    if (this.foods[c][r].status == 1)
+                    {
+                        if (posX > this.foods[c][r].x && posX < this.foods[c][r].x + this.width
+                        && posY > this.foods[c][r].y && posY < this.foods[c][r].y + this.height) 
+                        {
+                            this.foods[c][r].status = 0;
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
     }
 
@@ -262,17 +277,21 @@
             this.pacMan.draw();
             this.food.draw();
             this.wall.draw();
+            this.collisionDetection();
             requestAnimationFrame(()=>this.draw());
         }
 
         updateGame()
         {
-
+            
         }
 
         collisionDetection()
         {
-
+            if (this.food.eated(this.pacMan.posX, this.pacMan.posY))
+            {
+                
+            }
         }
     }
 
