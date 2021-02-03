@@ -84,6 +84,7 @@
         moveDown()
         {
             //เดินลง
+            this.lastposY=this.posY;
             this.posY += 62;
             if (this.posY + (this.width+5) > this.canvas.height) 
             {
