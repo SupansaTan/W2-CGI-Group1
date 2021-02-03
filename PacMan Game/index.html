@@ -24,7 +24,8 @@
             this.posY = posY;
             this.width = width;
             this.speed ;
-            
+            this.direction;
+            this.lastposX;
         }
 
         draw()
@@ -43,31 +44,38 @@
         moveLeft()
         {
             //เดินไปทางซ้าย
+            this.lastposX=this.posX;
             this.posX -= 62;
+            
             if (this.posX-this.width < 0) 
             {
                 this.posX = 32; 
             }
+            
         }
 
         moveRight()
         {
             //เดินไปทางขวา
+            this.lastposX=this.posX;
             this.posX += 62;
             if (this.posX + (this.width+5) > this.canvas.width) 
             {
                 this.posX = this.canvas.width - (this.width+9); 
             }
+            this.direction="d"
         }
 
         moveUp()
         {
             //เดินขึ้น
+            this.lastposY=this.posY;
             this.posY -= 62;
             if (this.posY-(this.width+30) < 0) 
             {
                 this.posY = 60; 
             }
+            this.direction="w"
         }
 
         moveDown()
@@ -78,6 +86,7 @@
             {
                 this.posY = this.canvas.height-30 
             }
+            this.direction="s"
         }
         
         
@@ -241,9 +250,20 @@
             }
         }
 
-        hitWall(posX, posY)
+        hitWall(posX,posY)
         {
-            
+            for(var c=0;c<this.column;c++)
+            {
+                for(var r=0;r<this.row;r++)
+                {
+                    if (posX > this.walls[c][r].x && posX < this.walls[c][r].x + this.width 
+                        && posY > this.walls[c][r].y && posY < this.walls[c][r].y + this.height) 
+                        {
+                            
+                            return true;
+                        } 
+                }
+            }
             
         }
     }
@@ -331,7 +351,7 @@
             this.wall.draw();
             this.food.draw();
             this.collisionDetection();
-
+            
             this.updateGame();
             requestAnimationFrame(()=>this.draw());
         }
@@ -353,6 +373,11 @@
                 this.winCheck();
             }
             
+            if(this.wall.hitWall(this.pacMan.posX,this.pacMan.posY))
+            {
+                this.pacMan.posX=this.pacMan.lastposX
+                
+            }
         }
         winCheck()
         {
@@ -362,7 +387,9 @@
                 alert("You are the Winner") //แสดงกล่องข้อความเเจ้งเตือนว่าชนะ
                 window.location.reload(); // เรื่มเกมใหม่
             }
+        
         }
+    
     }
 
 let game = new Game();
