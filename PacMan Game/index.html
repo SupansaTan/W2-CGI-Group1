@@ -26,6 +26,7 @@
             this.speed ;
             this.direction;
             this.lastposX;
+            this.lastposY
         }
 
         draw()
@@ -45,19 +46,21 @@
         {
             //เดินไปทางซ้าย
             this.lastposX=this.posX;
+            
             this.posX -= 62;
             
             if (this.posX-this.width < 0) 
             {
                 this.posX = 32; 
             }
-            
+            this.direction="a"
         }
 
         moveRight()
         {
             //เดินไปทางขวา
             this.lastposX=this.posX;
+            
             this.posX += 62;
             if (this.posX + (this.width+5) > this.canvas.width) 
             {
@@ -375,8 +378,13 @@
             
             if(this.wall.hitWall(this.pacMan.posX,this.pacMan.posY))
             {
+                if(this.pacMan.direction=="a" || this.pacMan.direction=="d")
+                {
                 this.pacMan.posX=this.pacMan.lastposX
-                
+            }
+                else if(this.pacMan.direction=="w" || this.pacMan.direction=="s")
+                {
+                this.pacMan.posY=this.pacMan.lastposY}
             }
         }
         winCheck()
