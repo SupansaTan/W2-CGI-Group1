@@ -11,6 +11,7 @@
 
 <h1>PAC-MAN Game</h1>
 <canvas id="canvas" width="800" height="400"></canvas>
+<p id="tt"></p>
 
 <script>
     class Pacman
@@ -23,20 +24,25 @@
             this.posY = posY;
             this.width = width;
             this.speed ;
+            
         }
 
         draw()
-        {
+        { 
+            //draw pacman
+            
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.beginPath();
             this.ctx.arc(this.posX,this.posY,this.width,0,Math.PI*2);
             this.ctx.fillStyle = 'yellow';
             this.ctx.fill();
             this.ctx.closePath();
+            game.a[5][6] = "2";
         }
 
         moveLeft()
         {
+            //เดินไปทางซ้าย
             this.posX -= 62;
             if (this.posX-this.width < 0) 
             {
@@ -46,6 +52,7 @@
 
         moveRight()
         {
+            //เดินไปทางขวา
             this.posX += 62;
             if (this.posX + (this.width+5) > this.canvas.width) 
             {
@@ -55,6 +62,7 @@
 
         moveUp()
         {
+            //เดินขึ้น
             this.posY -= 62;
             if (this.posY-(this.width+30) < 0) 
             {
@@ -64,6 +72,7 @@
 
         moveDown()
         {
+            //เดินลง
             this.posY += 62;
             if (this.posY + (this.width+5) > this.canvas.height) 
             {
@@ -115,8 +124,10 @@
             this.padding = 52;
             this.offsetTop = 56;
             this.offsetLeft = 26;
+            
             this.posX ;
             this.posY ;
+            
 
             // create foods
             this.foods = [];
@@ -126,6 +137,7 @@
                 for(var r=0; r<this.row; r++) 
                 {
                     this.foods[c][r] = {x:0, y:0, status:1};
+                    
                 }
             }
         }
@@ -136,8 +148,9 @@
             {
                 for(var r=0; r<this.row; r++)
                 {
-                    if (this.foods[c][r].status == 1)  // if bricks remain
+                    if(this.foods[c][r].status == 1  && game.a[c][r] == " ")  
                     {
+                        
                         this.X = (c*(this.width+this.padding))+this.offsetLeft;
                         this.Y = (r*(this.height+this.padding))+this.offsetTop;
                         this.foods[c][r].x = this.X;
@@ -147,7 +160,12 @@
                         this.ctx.fillStyle = "white";
                         this.ctx.fill();
                         this.ctx.closePath();
+                        game.a[c][r] == "0";
+                        game.count+=1;
+                        
                     }
+                    
+                    
                 }
             }
         }
@@ -158,12 +176,12 @@
             {
                 for (var r = 0; r < this.row; r++) 
                 {
-                    if (this.foods[c][r].status == 1)
+                    if (this.foods[c][r].status == 1 ) //ถ้าอาหารยังไม่ถูกกิน
                     {
                         if (posX > this.foods[c][r].x && posX < this.foods[c][r].x + this.width
                         && posY > this.foods[c][r].y && posY < this.foods[c][r].y + this.height) 
                         {
-                            this.foods[c][r].status = 0;
+                            this.foods[c][r].status = 0;//อาหารถูกกิน
                             return true;
                         }
                     }
@@ -171,6 +189,7 @@
             }
             return false;
         }
+    
     }
 
     class Wall
@@ -179,21 +198,25 @@
         {
             this.canvas = document.getElementById("canvas");
             this.ctx = this.canvas.getContext("2d");
-            this.row = 2
-            this.column = 3
-            this.width = 248
-            this.height = 124
-            this.padding = 62;
+            this.row = 6
+            this.column = 13
+            this.width = 62
+            this.height = 62
+            this.padding = 0;
             this.offsetTop = 30;
+            this.offsetLeft = 0;
             this.posX;
             this.posY;
-            this.walls = []
+            
+            //create walls
+            this.walls = [];
             for(var c=0;c<this.column;c++)
             {
                 this.walls[c] = [];
                 for(var r=0; r<this.row; r++) 
                 {
-                    this.walls[c][r] = {x:0, y:0};
+                    this.walls[c][r] = {x:0, y:0, status:1};
+                    
                 }
             }
         }
@@ -203,36 +226,24 @@
             {
                 for(var r=0; r<this.row; r++)
                 {
-                        this.wx = (c*(this.width+this.padding));
-                        this.wy = (r*(this.height+this.padding)+this.offsetTop);
+                    if(this.walls[c][r].status == 1 && game.a[c][r]== "1"){
+                        this.wx = c*this.width;
+                        this.wy = (r*this.height)+this.offsetTop;
                         this.walls[c][r].x = this.wx;
                         this.walls[c][r].y = this.wy;
                         this.ctx.beginPath();
                         this.ctx.rect(this.wx, this.wy, this.width, this.height);
                         this.ctx.fillStyle = "green";
                         this.ctx.fill();
-                        this.ctx.closePath();
-                    
+                        this.ctx.closePath();    
+                    }                
                 }
             }
         }
 
         hitWall(posX, posY)
         {
-            for (var c= 0; c < this.column; c++)
-            {
-                for (var r = 0; r < this.row; r++) 
-                {
-                    if (this.walls[c][r].status == 1)
-                    {
-                        if (posX +this.pacMan.width+247> this.walls[c][r].x && +this.pacMan.width < this.walls[c][r].x + this.width
-                        && posY+this.pacMan.width+247 > this.walls[c][r].y && posY+this.pacMan.width < this.walls[c][r].y + this.height) 
-                        {
-                            posX=posX-65;
-                        }
-                    }
-                }
-            }
+            
             
         }
     }
@@ -247,18 +258,22 @@
 
         keyDownHandler(e) 
         {
+            //เมื่อกดปุ่มขวา
             if (e.key == "d" || e.key == "ArrowRight" || e.key == "Right")
             {
                 game.pacMan.moveRight();
             }
+            //เมื่อกดปุ่มซ้าย
             else if (e.key == "a" || e.key == "ArrowLeft" || e.key == "Left")
             {
                 game.pacMan.moveLeft();
             }
+            //เมื่อกดปุ่มบน
             else if (e.key == "w" || e.key == "ArrowUp")
             {
                 game.pacMan.moveUp();
             }
+            //เมื่อกดปุ่มล่าง
             else if (e.key == "s" || e.key == "ArrowDown")
             {
                 game.pacMan.moveDown();
@@ -293,20 +308,37 @@
             this.food = new Food();
             this.inputProcessor = new InputProcessor();
             this.inputProcessor.addEvent();
+            this.count = 0;
+            this.a =[["1","1"," "," ","1","1"],
+            ["1"," "," "," "," "," "],
+            ["1"," "," ","1"," "," "],
+            [" "," "," ","1"," "," "],
+            ["1"," "," ","1"," "," "],
+            ["1"," "," "," "," "," "],
+            ["1"," "," "," "," "," "],
+            ["1"," "," "," "," "," "],
+            [" "," "," ","1"," "," "],
+            [" "," "," ","1"," ","1"],
+            ["1"," "," "," "," ","1"],
+            ["1"," "," "," "," ","1"],
+            ["1"," "," "," ","1","1"]]
+            
         }
 
         draw()
         {
             this.pacMan.draw();
-            this.food.draw();
             this.wall.draw();
+            this.food.draw();
             this.collisionDetection();
+
             this.updateGame();
             requestAnimationFrame(()=>this.draw());
         }
 
         updateGame()
-        {
+        { 
+            //คะแนนกับชีวิต
             this.ctx.font = "16px Arial";
             this.ctx.fillStyle = "white";
             this.ctx.fillText("Score: " + this.score, 8, 20);
@@ -318,16 +350,24 @@
             if (this.food.eated(this.pacMan.posX, this.pacMan.posY))
             {
                 this.score += 1;
+                this.winCheck();
             }
-            if (this.wall.hitWall(this.pacMan.posX, this.pacMan.posY))
+            
+        }
+        winCheck()
+        {
+            
+            if (this.score == 55)
             {
-               
+                alert("You are the Winner") //แสดงกล่องข้อความเเจ้งเตือนว่าชนะ
+                window.location.reload(); // เรื่มเกมใหม่
             }
         }
     }
 
 let game = new Game();
 game.draw();
+document.getElementById("tt").innerHTML = game.count;
 </script>
 </body>
 </html>
