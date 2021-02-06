@@ -81,7 +81,7 @@
         moveDown()
         {
             this.lastposY = this.posY;
-            
+
             // when Pacman is not at the bottom
             if (this.posY+this.offsetTop < this.canvas.height) 
             {
@@ -93,22 +93,56 @@
 
     class Ghost
     {
-        constructor()
+        constructor(row, column)
         {
             this.canvas = document.getElementById("canvas");
             this.ctx = this.canvas.getContext("2d");
-            this.posX = 3 * (this.canvas.width/13) + 33;
-            this.posY = 60;
-            this.width = 15;
+            this.offsetLeft = 30;
+            this.offsetTop = 60;
+            this.posX = (column*60) + this.offsetLeft;
+            this.posY = (row*60) + this.offsetTop;
+            this.radius = 15; // radius of ghost head
         }
 
         draw()
         {
+            /* draw head and legs */
             this.ctx.beginPath();
-            this.ctx.arc(this.posX,this.posY,this.width,0,Math.PI*2);
-            this.ctx.fillStyle = 'red';
+            this.ctx.fillStyle = 'orange';
+            this.ctx.moveTo(this.posX-20, this.posY-20);
+            this.ctx.lineTo(this.posX-20, this.posY);
+
+            // head
+            this.ctx.bezierCurveTo(this.posX-20, this.posY-30, this.posX+20, this.posY-30, this.posX+20, this.posY);
+
+            // legs
+            this.ctx.lineTo(this.posX+20, this.posY+20);
+            this.ctx.lineTo(this.posX+13, this.posY+10);
+            this.ctx.lineTo(this.posX+6, this.posY+20);
+            this.ctx.lineTo(this.posX-1, this.posY+10);
+            this.ctx.lineTo(this.posX-7, this.posY+20);
+            this.ctx.lineTo(this.posX-13, this.posY+10);
+            this.ctx.lineTo(this.posX-20, this.posY+20);
             this.ctx.fill();
-            this.ctx.closePath();
+
+            /* draw eyes */
+            // big eyes
+            this.ctx.beginPath();
+            this.ctx.fillStyle = 'white';
+            this.ctx.moveTo(this.posX-(this.radius/2), this.posY-(this.radius/4));
+            this.ctx.arc(this.posX-(this.radius/2), this.posY-(this.radius/4), 5, 0, Math.PI * 2, true); // left eye
+            this.ctx.moveTo(this.posX+(this.radius/2), this.posY-(this.radius/4));
+            this.ctx.arc(this.posX+(this.radius/2), this.posY-(this.radius/4), 5, 0, Math.PI * 2, true); // right eye
+            this.ctx.fill();
+
+            // small eyes
+            this.ctx.beginPath();
+            this.ctx.fillStyle = 'black';
+            this.ctx.moveTo(this.posX-(this.radius/2), this.posY-(this.radius/4));
+            this.ctx.arc(this.posX-(this.radius/2), this.posY-(this.radius/4), 2, 0, Math.PI * 2, true); // left eye
+            this.ctx.moveTo(this.posX+(this.radius/2), this.posY-(this.radius/4));
+            this.ctx.arc(this.posX+(this.radius/2), this.posY-(this.radius/4), 2, 0, Math.PI * 2, true); // right eye
+            this.ctx.fill();
         }
 
         move(posX, posY)
@@ -248,7 +282,6 @@
                         this.ctx.rect(this.walls[c][r].x, this.walls[c][r].y, this.width, this.height);
                         this.ctx.fillStyle = "green";
                         this.ctx.fill();
-                        this.ctx.stroke();
                         this.ctx.closePath();    
                     }                
                 }
@@ -328,7 +361,7 @@
             this.score = 0;
             this.pacMan = new Pacman(5,6,15);
             this.wall = new Wall();
-            this.ghost = new Ghost();
+            this.ghost = new Ghost(0,3);
             this.food = new Food();
             this.inputProcessor = new InputProcessor();
             this.inputProcessor.addEvent();
