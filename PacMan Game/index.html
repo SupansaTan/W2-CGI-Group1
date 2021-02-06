@@ -155,21 +155,22 @@
 
             if (distX >= distY)
             {
-                this.posX += distX/(2*offsetLeft);
+                this.posX += (distX/(2*offsetLeft)|0) + this.offsetLeft;
             }
             else
             {
-                this.posY += distY/offsetTop;
+                this.posY += (distY/offsetTop)|0 + this.offsetTop;
             }
         }
 
         hitPacman(posX, posY)
         {
             // ghost hit pacman
-            if (this.posX-this.offsetLeft < posX <= this.posX+this.offsetLeft && this.posY-30 < posY <= this.posY+30)
+            if (this.posX-20<posX && posX<this.posX+20 && this.posY-30<posY && posY<this.posY+30)
             {
                 return true;
             }
+            return false;
         }
     }
 
@@ -409,20 +410,22 @@
             this.updateGame();
             requestAnimationFrame(()=>this.draw());
         }
-        restart(){
+
+        restart()
+        {
             this.pacMan = new Pacman(5,6,15);
             this.lives = 3;
             this.score = 0;
-            for(var c=0;c<13;c++)
+            for(var c=0; c<this.food.column; c++)
             {
-                for(var r=0; r<6; r++) 
+                for(var r=0; r<this.food.row; r++) 
                 {
                     this.food.foods[c][r] = {x:0, y:0, status:1}; 
                 }
             }
             this.draw();
-            
         }
+
         updateGame()
         { 
             //คะแนนกับชีวิต
@@ -434,12 +437,14 @@
 
         collisionDetection()
         {
-            if (this.food.eated(this.pacMan.posX, this.pacMan.posY, this.pacMan.radius))
+            // when the Pacman eat food
+            if(this.food.eated(this.pacMan.posX, this.pacMan.posY, this.pacMan.radius))
             {
                 this.score += 1;
                 this.winCheck();
             }
             
+            // when the Pacman hit wall
             if(this.wall.hitWall(this.pacMan.posX,this.pacMan.posY, this.pacMan.radius))
             {
                 if(this.pacMan.direction=="a" || this.pacMan.direction=="d")
@@ -451,11 +456,34 @@
                     this.pacMan.posY = this.pacMan.lastposY
                 }
             }
+
+            // when the ghost hit Pacman
+            if(this.ghost.hitPacman(this.pacMan.posX, this.pacMan.posY))
+            {
+                if (this.lives == 0) // game over
+                {
+                    this.ctx.beginPath();
+                    this.ctx.rect(this.canvas.width/6, this.canvas.height-250, 500, 150);
+                    this.ctx.fillStyle = "white";
+                    this.ctx.fill(); 
+                    this.ctx.font = "32px Arial";
+                    this.ctx.fillStyle = "black";
+                    this.ctx.fillText("Game Over !" ,280, 200);
+                    this.ctx.fillText("(Press r/R to restart game)" , 190, 250);
+                    this.ctx.requestPointerLock(); // freeze game and can't move the Pacman
+                }
+                else
+                {
+                    this.lives -= 1;
+                    this.pacMan = new Pacman(5,6,15);
+                    this.ghost = new Ghost(0,3);
+                }
+            }
         }
 
         winCheck()
         {
-            if (this.score == 55)
+            if (this.score == 54) // winner
             {
                 this.ctx.beginPath();
                 this.ctx.rect(this.canvas.width/6, this.canvas.height-250, 500, 150);
@@ -466,10 +494,9 @@
                 this.ctx.fillStyle = "black";
                 this.ctx.fillText("You are the Winner!! " ,220, 200);
                 this.ctx.fillText("(Press r/R to restart game)" , 190, 250);
-                restart();
+                this.ctx.requestPointerLock(); // freeze game and can't move the Pacman
             }
         }
-    
     }
 
 let game = new Game();
