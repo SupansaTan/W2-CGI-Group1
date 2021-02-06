@@ -99,7 +99,11 @@
             this.ctx = this.canvas.getContext("2d");
             this.offsetLeft = 30;
             this.offsetTop = 60;
-            this.radius = 15; // radius of ghost head
+            this.radius = 15;
+            this.row = row;
+            this.column = column;
+            this.lastColumn = column;
+            this.lastRow = row;
 
             // center position
             this.posX = (column*60) + this.offsetLeft;
@@ -108,6 +112,9 @@
 
         draw()
         {
+            this.posX = (this.column*60) + this.offsetLeft;
+            this.posY = (this.row*60) + this.offsetTop;
+
             /* draw head and legs */
             this.ctx.beginPath();
             this.ctx.fillStyle = 'orange';
@@ -153,13 +160,30 @@
             var distX = this.posX - posX;
             var distY = this.posY - posY;
 
-            if (distX >= distY)
+            if (distX > 0 && this.column > 0)
             {
-                this.posX += (distX/(2*offsetLeft)|0) + this.offsetLeft;
+                this.lastColumn = this.column;
+                this.column -= 1;
+                this.posX = (this.column*60) + this.offsetLeft;
             }
-            else
+            else if (distX < 0 && this.column < this.canvas.width/13)
             {
-                this.posY += (distY/offsetTop)|0 + this.offsetTop;
+                this.lastColumn = this.column;
+                this.column += 1;
+                this.posX = (this.column*60) + this.offsetLeft;
+            }
+
+            if (distY > 0 && this.row > 0)
+            {
+                this.lastRow = this.row;
+                this.row -= 1;
+                this.posY = (this.row*60) + this.offsetTop;
+            }
+            else if (distY < 0 && this.row < (this.canvas.height-30)/6)
+            {
+                this.lastRow = this.row;
+                this.row += 1;
+                this.posY = (this.row*60) + this.offsetTop;
             }
         }
 
@@ -291,7 +315,7 @@
             }
         }
 
-        hitWall(posX,posY,radius)
+        hitWall(posX,posY,radius) // for the pacman hits the wall
         {
             for(var c=0;c<this.column;c++)
             {
@@ -304,7 +328,22 @@
                     } 
                 }
             }
-            
+        }
+
+        hitWall(posX,posY,width,height) // for the ghost hits the wall
+        {
+            for(var c=0;c<this.column;c++)
+            {
+                for(var r=0;r<this.row;r++)
+                {
+                    if (posX > this.walls[c][r].x && posX+width/2 < this.walls[c][r].x + this.width
+                        && posY > this.walls[c][r].y && posY+height/2 < this.walls[c][r].y + this.height) 
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
         }
     }
 
@@ -322,24 +361,29 @@
             if (e.key == "d" || e.key == "ArrowRight" || e.key == "Right")
             {
                 game.pacMan.moveRight();
+                game.ghost.move(game.pacMan.posX, game.pacMan.posY);
             }
             //เมื่อกดปุ่มซ้าย
             else if (e.key == "a" || e.key == "ArrowLeft" || e.key == "Left")
             {
                 game.pacMan.moveLeft();
+                game.ghost.move(game.pacMan.posX, game.pacMan.posY);
             }
             //เมื่อกดปุ่มบน
             else if (e.key == "w" || e.key == "ArrowUp")
             {
                 game.pacMan.moveUp();
+                game.ghost.move(game.pacMan.posX, game.pacMan.posY);
             }
             //เมื่อกดปุ่มล่าง
             else if (e.key == "s" || e.key == "ArrowDown")
             {
                 game.pacMan.moveDown();
+                game.ghost.move(game.pacMan.posX, game.pacMan.posY);
             }
             else if (e.key == "r" || e.key == "R")
             {
+                game.freeze = false;
                 game.restart();
             }
         }
@@ -382,6 +426,7 @@
             this.inputProcessor = new InputProcessor();
             this.inputProcessor.addEvent();
             this.count = 0;
+            this.freeze = false;
             this.a =[["1","1"," "," ","1","1"],
             ["1"," "," "," "," "," "],
             ["1"," "," ","1"," "," "],
@@ -395,20 +440,24 @@
             ["1"," "," "," "," ","1"],
             ["1"," "," "," "," ","1"],
             ["1"," "," "," ","1","1"]]
-            
         }
 
         draw()
         {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.pacMan.draw();
-            this.wall.draw();
-            this.food.draw();
-            this.ghost.draw();
-            this.collisionDetection();
-            
-            this.updateGame();
-            requestAnimationFrame(()=>this.draw());
+            if(!this.freeze)
+            {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.winCheck();
+                this.pacMan.draw();
+                this.wall.draw();
+                this.food.draw();
+                this.ghost.draw();
+                this.collisionDetection();
+                //this.ghost.move(this.pacMan.posX, this.pacMan.posY);
+
+                this.updateGame();
+                requestAnimationFrame(()=>this.draw());
+            }
         }
 
         restart()
@@ -428,7 +477,7 @@
 
         updateGame()
         { 
-            //คะแนนกับชีวิต
+            // คะแนนกับชีวิต
             this.ctx.font = "16px Arial";
             this.ctx.fillStyle = "white";
             this.ctx.fillText("Score: " + this.score, 8, 20);
@@ -441,7 +490,6 @@
             if(this.food.eated(this.pacMan.posX, this.pacMan.posY, this.pacMan.radius))
             {
                 this.score += 1;
-                this.winCheck();
             }
             
             // when the Pacman hit wall
@@ -460,7 +508,7 @@
             // when the ghost hit Pacman
             if(this.ghost.hitPacman(this.pacMan.posX, this.pacMan.posY))
             {
-                if (this.lives == 0) // game over
+                if (this.lives == 1) // game over
                 {
                     this.ctx.beginPath();
                     this.ctx.rect(this.canvas.width/6, this.canvas.height-250, 500, 150);
@@ -470,15 +518,24 @@
                     this.ctx.fillStyle = "black";
                     this.ctx.fillText("Game Over !" ,280, 200);
                     this.ctx.fillText("(Press r/R to restart game)" , 190, 250);
-                    this.ctx.requestPointerLock(); // freeze game and can't move the Pacman
+                    this.freeze = true;
                 }
                 else
                 {
                     this.lives -= 1;
+                    // move to start position
                     this.pacMan = new Pacman(5,6,15);
                     this.ghost = new Ghost(0,3);
                 }
             }
+
+            // when the ghost hit wall
+            if(this.wall.hitWall(this.ghost.posX, this.ghost.posY, 40, 40))
+            {
+                this.ghost.row = this.ghost.lastRow;
+                this.ghost.column = this.ghost.lastColumn;
+            }
+            
         }
 
         winCheck()
@@ -492,15 +549,15 @@
                 this.ctx.closePath(); 
                 this.ctx.font = "32px Arial";
                 this.ctx.fillStyle = "black";
-                this.ctx.fillText("You are the Winner!! " ,220, 200);
+                this.ctx.fillText("You are the Winner!!",230, 200);
                 this.ctx.fillText("(Press r/R to restart game)" , 190, 250);
-                this.ctx.requestPointerLock(); // freeze game and can't move the Pacman
+                this.freeze = true;
             }
         }
     }
 
-let game = new Game();
-game.draw();
+    let game = new Game();
+    game.draw();
 </script>
 </body>
 </html>
