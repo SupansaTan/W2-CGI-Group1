@@ -337,6 +337,10 @@
             {
                 game.pacMan.moveDown();
             }
+            else if (e.key == "r" || e.key == "R")
+            {
+                game.restart();
+            }
         }
 
         mouseMoveHandler(e)
@@ -405,7 +409,20 @@
             this.updateGame();
             requestAnimationFrame(()=>this.draw());
         }
-
+        restart(){
+            this.pacMan = new Pacman(5,6,15);
+            this.lives = 3;
+            this.score = 0;
+            for(var c=0;c<13;c++)
+            {
+                for(var r=0; r<6; r++) 
+                {
+                    this.food.foods[c][r] = {x:0, y:0, status:1}; 
+                }
+            }
+            this.draw();
+            
+        }
         updateGame()
         { 
             //คะแนนกับชีวิต
@@ -440,8 +457,16 @@
         {
             if (this.score == 55)
             {
-                alert("You are the Winner") //แสดงกล่องข้อความเเจ้งเตือนว่าชนะ
-                window.location.reload(); // เรื่มเกมใหม่
+                this.ctx.beginPath();
+                this.ctx.rect(this.canvas.width/6, this.canvas.height-250, 500, 150);
+                this.ctx.fillStyle = "white";
+                this.ctx.fill();
+                this.ctx.closePath(); 
+                this.ctx.font = "32px Arial";
+                this.ctx.fillStyle = "black";
+                this.ctx.fillText("You are the Winner!! " ,220, 200);
+                this.ctx.fillText("(Press r/R to restart game)" , 190, 250);
+                restart();
             }
         }
     
