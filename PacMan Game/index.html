@@ -99,9 +99,11 @@
             this.ctx = this.canvas.getContext("2d");
             this.offsetLeft = 30;
             this.offsetTop = 60;
+            this.radius = 15; // radius of ghost head
+
+            // center position
             this.posX = (column*60) + this.offsetLeft;
             this.posY = (row*60) + this.offsetTop;
-            this.radius = 15; // radius of ghost head
         }
 
         draw()
@@ -153,18 +155,18 @@
 
             if (distX >= distY)
             {
-                this.posX += distX/60;
+                this.posX += distX/(2*offsetLeft);
             }
             else
             {
-                this.posY += distY/60;
+                this.posY += distY/offsetTop;
             }
         }
 
         hitPacman(posX, posY)
         {
             // ghost hit pacman
-            if (this.posX < posX <= this.posX + 30 && this.posY - 30 < posY <= this.posY + 30)
+            if (this.posX-this.offsetLeft < posX <= this.posX+this.offsetLeft && this.posY-30 < posY <= this.posY+30)
             {
                 return true;
             }
@@ -221,7 +223,7 @@
             }
         }
 
-        eated(posX,posY)
+        eated(posX,posY,radius)
         {
             for (var c= 0; c < this.column; c++)
             {
@@ -229,8 +231,8 @@
                 {
                     if (this.foods[c][r].status == 1 ) //ถ้าอาหารยังไม่ถูกกิน
                     {
-                        if (posX > this.foods[c][r].x && posX < this.foods[c][r].x + this.width
-                        && posY > this.foods[c][r].y && posY < this.foods[c][r].y + this.width) 
+                        if (posX+radius > this.foods[c][r].x && posX-radius < this.foods[c][r].x + this.width
+                        && posY+radius > this.foods[c][r].y && posY-radius < this.foods[c][r].y + this.width) 
                         {
                             this.foods[c][r].status = 0; //อาหารถูกกิน
                             return true;
@@ -288,14 +290,14 @@
             }
         }
 
-        hitWall(posX,posY)
+        hitWall(posX,posY,radius)
         {
             for(var c=0;c<this.column;c++)
             {
                 for(var r=0;r<this.row;r++)
                 {
-                    if (posX > this.walls[c][r].x && posX < this.walls[c][r].x + this.width 
-                        && posY > this.walls[c][r].y && posY < this.walls[c][r].y + this.height) 
+                    if (posX+radius > this.walls[c][r].x && posX-radius < this.walls[c][r].x + this.width 
+                        && posY+radius > this.walls[c][r].y && posY-radius < this.walls[c][r].y + this.height) 
                     {
                         return true;
                     } 
@@ -337,18 +339,27 @@
             }
         }
 
-       /* mouseMoveHandler(e)
+        mouseMoveHandler(e)
         {
             var relativeX = e.clientX - canvas.offsetLeft;
-            var relativeY = e.clientY - canvas.offsetTop
-            if (relativeX > 0 && relativeX < canvas.width ) 
+            var relativeY = e.clientY - canvas.offsetTop;
+            var lastposX = game.pacMan.posX;
+            var lastposY = game.pacMan.posY;
+
+            if (relativeX > 0 && relativeX < canvas.width) 
             {
-                game.pacMan.posX = relativeX - game.pacMan.width/2;
+                game.pacMan.posX = relativeX;
             }
-            if (relativeY > 0 && relativeY < canvas.height) {
-                game.pacMan.posY = relativeY - game.pacMan.width/2;
+            if (relativeY > 30 + game.pacMan.radius && relativeY < canvas.height) 
+            {
+                game.pacMan.posY = relativeY;
             }
-        }*/
+            if (game.wall.hitWall(relativeX, relativeY, game.pacMan.radius))
+            {
+                game.pacMan.posX = lastposX;
+                game.pacMan.posY = lastposY;
+            }
+        }
     }
 
     class Game
@@ -406,13 +417,13 @@
 
         collisionDetection()
         {
-            if (this.food.eated(this.pacMan.posX, this.pacMan.posY))
+            if (this.food.eated(this.pacMan.posX, this.pacMan.posY, this.pacMan.radius))
             {
                 this.score += 1;
                 this.winCheck();
             }
             
-            if(this.wall.hitWall(this.pacMan.posX,this.pacMan.posY))
+            if(this.wall.hitWall(this.pacMan.posX,this.pacMan.posY, this.pacMan.radius))
             {
                 if(this.pacMan.direction=="a" || this.pacMan.direction=="d")
                 {
