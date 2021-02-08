@@ -39,7 +39,7 @@
             this.ctx.fillStyle = 'yellow';
             this.ctx.fill();
             this.ctx.closePath();
-            game.a[5][6] = "2";
+            game.map[5][6] = "2";
         }
 
         moveLeft()
@@ -112,6 +112,7 @@
 
         draw()
         {
+            // update position
             this.posX = (this.column*60) + this.offsetLeft;
             this.posY = (this.row*60) + this.offsetTop;
 
@@ -163,26 +164,26 @@
             if (distX > 0 && this.column > 0) // ghost on the right side of pacman
             {
                 this.lastColumn = this.column;
-                this.column -= 1;
+                this.column -= 1; // move left
                 this.posX = (this.column*60) + this.offsetLeft;
             }
             else if (distX < 0 && this.column < this.canvas.width/13) // ghost on the left side of pacman
             {
                 this.lastColumn = this.column;
-                this.column += 1;
+                this.column += 1; // move right
                 this.posX = (this.column*60) + this.offsetLeft;
             }
 
             if (distY > 0 && this.row > 0) // ghost below pacman
             {
                 this.lastRow = this.row;
-                this.row -= 1;
+                this.row -= 1; // move up
                 this.posY = (this.row*60) + this.offsetTop;
             }
             else if (distY < 0 && this.row < (this.canvas.height-30)/6) // ghost on top of pacman
             {
                 this.lastRow = this.row;
-                this.row += 1;
+                this.row += 1; // move down
                 this.posY = (this.row*60) + this.offsetTop;
             }
         }
@@ -192,7 +193,7 @@
             // ghost hit pacman
             if (this.posX-20<posX && posX<this.posX+20 && this.posY-30<posY && posY<this.posY+30)
             {
-                return true;
+                return true; // hit pacman
             }
             return false;
         }
@@ -230,7 +231,7 @@
             {
                 for(var r=0; r<this.row; r++)
                 {
-                    if(this.foods[c][r].status == 1  && game.a[c][r] == " ")  
+                    if(this.foods[c][r].status == 1 && game.map[c][r] == " ")  // food that hasn't been eated 
                     {
                         this.X = (c*(this.width+this.padding))+this.offsetLeft;
                         this.Y = (r*(this.width+this.padding))+this.offsetTop;
@@ -241,8 +242,8 @@
                         this.ctx.fillStyle = "white";
                         this.ctx.fill();
                         this.ctx.closePath();
-                        game.a[c][r] == "0";
-                        game.count += 1;
+                        game.map[c][r] == "0";
+                        game.count += 1; // count the number of food created
                     } 
                 }
             }
@@ -301,7 +302,7 @@
             {
                 for(var r=0; r<this.row; r++)
                 {
-                    if(this.walls[c][r].status == 1 && game.a[c][r]== "1")
+                    if(this.walls[c][r].status == 1 && game.map[c][r]== "1")
                     {
                         this.walls[c][r].x = c*this.width;
                         this.walls[c][r].y = (r*this.height)+this.offsetTop;
@@ -324,7 +325,7 @@
                     if (posX > this.walls[c][r].x && posX < this.walls[c][r].x + this.width 
                         && posY > this.walls[c][r].y && posY < this.walls[c][r].y + this.height) 
                     {
-                        return true;
+                        return true; // hit wall
                     } 
                 }
             }
@@ -367,6 +368,7 @@
             }
             else if (e.key == "r" || e.key == "R")
             {
+                // restart game
                 game.freeze = false;
                 game.restart();
             }
@@ -387,8 +389,9 @@
             {
                 game.pacMan.posY = relativeY;
             }
-            if (game.wall.hitWall(relativeX, relativeY, game.pacMan.radius))
+            if (game.wall.hitWall(relativeX, relativeY, game.pacMan.radius)) // when pacman hit wall
             {
+                // set to the previous position 
                 game.pacMan.posX = lastposX;
                 game.pacMan.posY = lastposY;
             }
@@ -409,9 +412,12 @@
             this.food = new Food();
             this.inputProcessor = new InputProcessor();
             this.inputProcessor.addEvent();
-            this.count = 0;
-            this.freeze = false;
-            this.a =[["1","1"," "," ","1","1"],
+            this.count = 0; // count the number of food created
+            this.freeze = false; 
+
+            /* map to set position walls and foods */
+            // instead of walls : 1, foods : " ", pacman : 2, ghost : 3
+            this.map = [["1","1"," "," ","1","1"],
             ["1"," "," "," "," "," "],
             ["1"," "," ","1"," "," "],
             [" "," "," ","1"," "," "],
@@ -436,7 +442,6 @@
                 this.food.draw();
                 this.ghost.draw();
                 this.collisionDetection();
-                //this.ghost.move(this.pacMan.posX, this.pacMan.posY);
 
                 this.winCheck();
                 this.updateGame();
