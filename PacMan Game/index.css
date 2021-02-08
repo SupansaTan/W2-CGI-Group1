@@ -4,6 +4,10 @@ h1 {
     font-family: 'Poppins', sans-serif;
 }
 
+img {
+    height: 100px;
+}
+
 /* contents */
 canvas {
     background: #000;

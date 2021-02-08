@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<h1>PAC-MAN Game</h1>
+<h1><img src="pacman-logo.png" alt="logo"></h1>
 <canvas id="canvas" width="780" height="390"></canvas>
 
 <script>
@@ -91,7 +91,7 @@
         }
     }
 
-    class Ghost
+    class Ghost 
     {
         constructor(row, column)
         {
@@ -160,26 +160,26 @@
             var distX = this.posX - posX;
             var distY = this.posY - posY;
 
-            if (distX > 0 && this.column > 0)
+            if (distX > 0 && this.column > 0) // ghost on the right side of pacman
             {
                 this.lastColumn = this.column;
                 this.column -= 1;
                 this.posX = (this.column*60) + this.offsetLeft;
             }
-            else if (distX < 0 && this.column < this.canvas.width/13)
+            else if (distX < 0 && this.column < this.canvas.width/13) // ghost on the left side of pacman
             {
                 this.lastColumn = this.column;
                 this.column += 1;
                 this.posX = (this.column*60) + this.offsetLeft;
             }
 
-            if (distY > 0 && this.row > 0)
+            if (distY > 0 && this.row > 0) // ghost below pacman
             {
                 this.lastRow = this.row;
                 this.row -= 1;
                 this.posY = (this.row*60) + this.offsetTop;
             }
-            else if (distY < 0 && this.row < (this.canvas.height-30)/6)
+            else if (distY < 0 && this.row < (this.canvas.height-30)/6) // ghost on top of pacman
             {
                 this.lastRow = this.row;
                 this.row += 1;
@@ -315,33 +315,17 @@
             }
         }
 
-        hitWall(posX,posY,radius) // for the pacman hits the wall
+        hitWall(posX,posY,radius)
         {
             for(var c=0;c<this.column;c++)
             {
                 for(var r=0;r<this.row;r++)
                 {
-                    if (posX+radius > this.walls[c][r].x && posX-radius < this.walls[c][r].x + this.width 
-                        && posY+radius > this.walls[c][r].y && posY-radius < this.walls[c][r].y + this.height) 
+                    if (posX > this.walls[c][r].x && posX < this.walls[c][r].x + this.width 
+                        && posY > this.walls[c][r].y && posY < this.walls[c][r].y + this.height) 
                     {
                         return true;
                     } 
-                }
-            }
-        }
-
-        hitWall(posX,posY,width,height) // for the ghost hits the wall
-        {
-            for(var c=0;c<this.column;c++)
-            {
-                for(var r=0;r<this.row;r++)
-                {
-                    if (posX > this.walls[c][r].x && posX+width/2 < this.walls[c][r].x + this.width
-                        && posY > this.walls[c][r].y && posY+height/2 < this.walls[c][r].y + this.height) 
-                    {
-                        return true;
-                    }
-                    return false;
                 }
             }
         }
@@ -447,7 +431,6 @@
             if(!this.freeze)
             {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.winCheck();
                 this.pacMan.draw();
                 this.wall.draw();
                 this.food.draw();
@@ -455,6 +438,7 @@
                 this.collisionDetection();
                 //this.ghost.move(this.pacMan.posX, this.pacMan.posY);
 
+                this.winCheck();
                 this.updateGame();
                 requestAnimationFrame(()=>this.draw());
             }
@@ -530,7 +514,7 @@
             }
 
             // when the ghost hit wall
-            if(this.wall.hitWall(this.ghost.posX, this.ghost.posY, 40, 40))
+            if(this.wall.hitWall(this.ghost.posX, this.ghost.posY, 20))
             {
                 this.ghost.row = this.ghost.lastRow;
                 this.ghost.column = this.ghost.lastColumn;
