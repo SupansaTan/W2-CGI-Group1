@@ -97,6 +97,7 @@
         {
             this.canvas = document.getElementById("canvas");
             this.ctx = this.canvas.getContext("2d");
+            this.wall = new Wall();
             this.offsetLeft = 30;
             this.offsetTop = 60;
             this.radius = 15;
@@ -155,37 +156,30 @@
             this.ctx.fill();
         }
 
-        move(posX, posY)
+        moveRed()
         {
-            // calculate distance between ghost and pacman 
-            var distX = this.posX - posX;
-            var distY = this.posY - posY;
 
-            if (distX > 0 && this.column > 0) // ghost on the right side of pacman
-            {
-                this.lastColumn = this.column;
-                this.column -= 1; // move left
-                this.posX = (this.column*60) + this.offsetLeft;
-            }
-            else if (distX < 0 && this.column < this.canvas.width/13) // ghost on the left side of pacman
-            {
-                this.lastColumn = this.column;
-                this.column += 1; // move right
-                this.posX = (this.column*60) + this.offsetLeft;
-            }
+        }
 
-            if (distY > 0 && this.row > 0) // ghost below pacman
-            {
-                this.lastRow = this.row;
-                this.row -= 1; // move up
-                this.posY = (this.row*60) + this.offsetTop;
-            }
-            else if (distY < 0 && this.row < (this.canvas.height-30)/6) // ghost on top of pacman
-            {
-                this.lastRow = this.row;
-                this.row += 1; // move down
-                this.posY = (this.row*60) + this.offsetTop;
-            }
+        movePink()
+        {
+
+        }
+
+        moveBlue()
+        {
+
+        }
+
+        moveYellow()
+        {
+            
+        }
+
+        updatePos(row, column) // update position
+        {
+            this.posX = (column*60) + this.offsetLeft;
+            this.posY = (row*60) + this.offsetTop;
         }
 
         hitPacman(posX, posY)
@@ -214,12 +208,12 @@
 
             // create foods
             this.foods = [];
-            for(var c=0;c<this.column;c++)
+            for(var r=0; r<this.row; r++)
             {
-                this.foods[c] = [];
-                for(var r=0; r<this.row; r++) 
+                this.foods[r] = [];
+                for(var c=0;c<this.column;c++) 
                 {
-                    this.foods[c][r] = {x:0, y:0, status:1};
+                    this.foods[r][c] = {x:0, y:0, status:1};
                     
                 }
             }
@@ -227,22 +221,22 @@
 
         draw()
         {
-            for(var c=0; c<this.column; c++)
+            for (var r = 0; r < this.row; r++)
             {
-                for(var r=0; r<this.row; r++)
+                for (var c= 0; c < this.column; c++) 
                 {
-                    if(this.foods[c][r].status == 1 && game.map[c][r] == " ")  // food that hasn't been eated 
+                    if(this.foods[r][c].status == 1 && game.map[r][c] == " ")  // food that hasn't been eated 
                     {
                         this.X = (c*(this.width+this.padding))+this.offsetLeft;
                         this.Y = (r*(this.width+this.padding))+this.offsetTop;
-                        this.foods[c][r].x = this.X;
-                        this.foods[c][r].y = this.Y;
+                        this.foods[r][c].x = this.X;
+                        this.foods[r][c].y = this.Y;
                         this.ctx.beginPath();
                         this.ctx.rect(this.X, this.Y, this.width, this.width);
                         this.ctx.fillStyle = "white";
                         this.ctx.fill();
                         this.ctx.closePath();
-                        game.map[c][r] == "0";
+                        game.map[r][c] == "0";
                         game.count += 1; // count the number of food created
                     } 
                 }
@@ -251,16 +245,16 @@
 
         eated(posX,posY,radius)
         {
-            for (var c= 0; c < this.column; c++)
+            for (var r = 0; r < this.row; r++)
             {
-                for (var r = 0; r < this.row; r++) 
+                for (var c= 0; c < this.column; c++) 
                 {
-                    if (this.foods[c][r].status == 1 ) //ถ้าอาหารยังไม่ถูกกิน
+                    if (this.foods[r][c].status == 1 ) //ถ้าอาหารยังไม่ถูกกิน
                     {
-                        if (posX+radius > this.foods[c][r].x && posX-radius < this.foods[c][r].x + this.width
-                        && posY+radius > this.foods[c][r].y && posY-radius < this.foods[c][r].y + this.width) 
+                        if (posX+radius > this.foods[r][c].x && posX-radius < this.foods[r][c].x + this.width
+                        && posY+radius > this.foods[r][c].y && posY-radius < this.foods[r][c].y + this.width) 
                         {
-                            this.foods[c][r].status = 0; //อาหารถูกกิน
+                            this.foods[r][c].status = 0; //อาหารถูกกิน
                             return true;
                         }
                     }
@@ -285,12 +279,12 @@
             
             //create walls
             this.walls = [];
-            for(var c=0;c<this.column;c++)
+            for(var r=0; r<this.row; r++)
             {
-                this.walls[c] = [];
-                for(var r=0; r<this.row; r++) 
+                this.walls[r] = [];
+                for(var c=0;c<this.column;c++) 
                 {
-                    this.walls[c][r] = {x:0, y:0, status:1};
+                    this.walls[r][c] = {x:0, y:0, status:1};
                     
                 }
             }
@@ -302,12 +296,12 @@
             {
                 for(var r=0; r<this.row; r++)
                 {
-                    if(this.walls[c][r].status == 1 && game.map[c][r]== "1")
+                    if(this.walls[r][c].status == 1 && game.map[r][c]== "1")
                     {
-                        this.walls[c][r].x = c*this.width;
-                        this.walls[c][r].y = (r*this.height)+this.offsetTop;
+                        this.walls[r][c].x = c*this.width;
+                        this.walls[r][c].y = (r*this.height)+this.offsetTop;
                         this.ctx.beginPath();
-                        this.ctx.rect(this.walls[c][r].x, this.walls[c][r].y, this.width, this.height);
+                        this.ctx.rect(this.walls[r][c].x, this.walls[r][c].y, this.width, this.height);
                         this.ctx.fillStyle = "green";
                         this.ctx.fill();
                         this.ctx.closePath();    
@@ -322,8 +316,8 @@
             {
                 for(var r=0;r<this.row;r++)
                 {
-                    if (posX > this.walls[c][r].x && posX < this.walls[c][r].x + this.width 
-                        && posY > this.walls[c][r].y && posY < this.walls[c][r].y + this.height) 
+                    if (posX > this.walls[r][c].x && posX < this.walls[r][c].x + this.width 
+                        && posY > this.walls[r][c].y && posY < this.walls[r][c].y + this.height) 
                     {
                         return true; // hit wall
                     } 
@@ -412,24 +406,16 @@
             this.food = new Food();
             this.inputProcessor = new InputProcessor();
             this.inputProcessor.addEvent();
-            this.count = 0; // count the number of food created
             this.freeze = false; 
 
             /* map to set position walls and foods */
             // instead of walls : 1, foods : " ", pacman : 2, ghost : 3
-            this.map = [["1","1"," "," ","1","1"],
-            ["1"," "," "," "," "," "],
-            ["1"," "," ","1"," "," "],
-            [" "," "," ","1"," "," "],
-            ["1"," "," ","1"," "," "],
-            ["1"," "," "," "," "," "],
-            ["1"," "," "," "," "," "],
-            ["1"," "," "," "," "," "],
-            [" "," "," ","1"," "," "],
-            [" "," "," ","1"," ","1"],
-            ["1"," "," "," "," ","1"],
-            ["1"," "," "," "," ","1"],
-            ["1"," "," "," ","1","1"]]
+            this.map = [["1","1","1","3","1","1","1","1","1","1","1","1","1"],
+                        ["1"," "," "," "," "," "," "," "," "," "," "," "," "],
+                        ["1"," ","1","3","3","3","1"," ","1","1","1"," ","1"],
+                        [" "," ","1","1","1","1","1"," ","1"," ","1"," "," "],
+                        ["1"," "," "," "," "," "," "," "," "," "," "," ","1"],
+                        ["1","1","1","1","1","1","2","1","1","1","1","1","1"]]
         }
 
         draw()
@@ -517,14 +503,6 @@
                     this.ghost = new Ghost(0,3);
                 }
             }
-
-            // when the ghost hit wall
-            if(this.wall.hitWall(this.ghost.posX, this.ghost.posY, 20))
-            {
-                this.ghost.row = this.ghost.lastRow;
-                this.ghost.column = this.ghost.lastColumn;
-            }
-            
         }
 
         winCheck()
