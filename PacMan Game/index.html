@@ -39,7 +39,6 @@
             this.ctx.fillStyle = 'yellow';
             this.ctx.fill();
             this.ctx.closePath();
-            game.map[5][6] = "2";
         }
 
         moveLeft()
@@ -93,7 +92,7 @@
 
     class Ghost 
     {
-        constructor(row, column)
+        constructor(row, column, color)
         {
             this.canvas = document.getElementById("canvas");
             this.ctx = this.canvas.getContext("2d");
@@ -105,6 +104,8 @@
             this.column = column;
             this.lastColumn = column;
             this.lastRow = row;
+            this.color = color;
+            this.canMove = false;
 
             // center position
             this.posX = (column*60) + this.offsetLeft;
@@ -119,7 +120,7 @@
 
             /* draw head and legs */
             this.ctx.beginPath();
-            this.ctx.fillStyle = 'orange';
+            this.ctx.fillStyle = this.color;
             this.ctx.moveTo(this.posX-20, this.posY-20);
             this.ctx.lineTo(this.posX-20, this.posY);
 
@@ -156,9 +157,42 @@
             this.ctx.fill();
         }
 
+        setDefaultPosition(name)
+        {
+            switch (name)
+            {
+                case Red:
+                    this.row = 0;
+                    this.column = 3;
+                    this.updatePos();
+                    break;
+                
+                case Pink:
+                    this.row = 2;
+                    this.column = 3;
+                    this.updatePos();
+                    break;
+
+                case Blue:
+                    this.row = 2;
+                    this.column = 4;
+                    this.updatePos();
+                    break;
+
+                case Yellow:
+                    this.row = 2;
+                    this.column = 5;
+                    this.updatePos();
+                    break;
+            }
+        }
+
         moveRed()
         {
+            if(canMove)
+            {
 
+            }
         }
 
         movePink()
@@ -205,6 +239,8 @@
             this.padding = 50; // distance between foods
             this.offsetTop = 55; // distance from the top canvas to food
             this.offsetLeft = 25; // distance from the left canvas to food
+            this.count = 0; // count the number of food created
+            this.map = new Map();
 
             // create foods
             this.foods = [];
@@ -213,8 +249,16 @@
                 this.foods[r] = [];
                 for(var c=0;c<this.column;c++) 
                 {
-                    this.foods[r][c] = {x:0, y:0, status:1};
-                    
+                    if (this.map.getMap(r,c) == " ")
+                    {
+                        this.foods[r][c] = {x:0, y:0, status:1};
+                        this.foods[r][c].x = (c*(this.width+this.padding))+this.offsetLeft;
+                        this.foods[r][c].y = (r*(this.width+this.padding))+this.offsetTop;
+                    }
+                    else
+                    {
+                        this.foods[r][c] = {status:0};
+                    }
                 }
             }
         }
@@ -225,20 +269,14 @@
             {
                 for (var c= 0; c < this.column; c++) 
                 {
-                    if(this.foods[r][c].status == 1 && game.map[r][c] == " ")  // food that hasn't been eated 
+                    if (this.foods[r][c].status == 1) // food that hasn't been eated
                     {
-                        this.X = (c*(this.width+this.padding))+this.offsetLeft;
-                        this.Y = (r*(this.width+this.padding))+this.offsetTop;
-                        this.foods[r][c].x = this.X;
-                        this.foods[r][c].y = this.Y;
                         this.ctx.beginPath();
-                        this.ctx.rect(this.X, this.Y, this.width, this.width);
+                        this.ctx.rect(this.foods[r][c].x, this.foods[r][c].y, this.width, this.width);
                         this.ctx.fillStyle = "white";
                         this.ctx.fill();
                         this.ctx.closePath();
-                        game.map[r][c] == "0";
-                        game.count += 1; // count the number of food created
-                    } 
+                    }
                 }
             }
         }
@@ -276,6 +314,7 @@
             this.width = 60
             this.height = 60
             this.offsetTop = 30; // distance from the top canvas to wall
+            this.map = new Map();
             
             //create walls
             this.walls = [];
@@ -284,8 +323,16 @@
                 this.walls[r] = [];
                 for(var c=0;c<this.column;c++) 
                 {
-                    this.walls[r][c] = {x:0, y:0, status:1};
-                    
+                    if (this.map.getMap(r,c) == "1") // if this position matches the map
+                    {
+                        this.walls[r][c] = {x:0, y:0, status:1};
+                        this.walls[r][c].x = c*this.width;
+                        this.walls[r][c].y = (r*this.height)+this.offsetTop;
+                    }
+                    else
+                    {
+                        this.walls[r][c] = {status:0};
+                    }
                 }
             }
         }
@@ -296,15 +343,13 @@
             {
                 for(var r=0; r<this.row; r++)
                 {
-                    if(this.walls[r][c].status == 1 && game.map[r][c]== "1")
+                    if(this.walls[r][c].status == 1)
                     {
-                        this.walls[r][c].x = c*this.width;
-                        this.walls[r][c].y = (r*this.height)+this.offsetTop;
                         this.ctx.beginPath();
                         this.ctx.rect(this.walls[r][c].x, this.walls[r][c].y, this.width, this.height);
                         this.ctx.fillStyle = "green";
                         this.ctx.fill();
-                        this.ctx.closePath();    
+                        this.ctx.closePath(); 
                     }                
                 }
             }
@@ -392,6 +437,26 @@
         }
     }
 
+    class Map
+    {
+        constructor()
+        {
+            /* map to set position walls and foods */
+            // instead of walls : 1, foods : " ", pacman : 2, ghost : 3
+            this.map = [["1","1","1","3","1","1","1","1","1","1","1","1","1"],
+                        ["1"," "," "," "," "," "," "," "," "," "," "," ","1"],
+                        ["1"," ","1","3","3","3","1"," ","1","1","1"," ","1"],
+                        [" "," ","1","1","1","1","1"," ","1"," ","1"," "," "],
+                        ["1"," "," "," "," "," "," "," "," "," "," "," ","1"],
+                        ["1","1","1","1","1","1","2","1","1","1","1","1","1"]]
+        }
+
+        getMap(row, column)
+        {
+            return this.map[row][column];
+        }
+    }
+
     class Game
     {
         constructor()
@@ -402,20 +467,14 @@
             this.score = 0;
             this.pacMan = new Pacman(5,6,15);
             this.wall = new Wall();
-            this.ghost = new Ghost(0,3);
+            this.redGhost = new Ghost(0,3,"red");
+            this.pinkGhost = new Ghost(2,3,"pink");
+            this.blueGhost = new Ghost(2,4,"blue");
+            this.yellowGhost = new Ghost(2,5,"gold");
             this.food = new Food();
             this.inputProcessor = new InputProcessor();
             this.inputProcessor.addEvent();
             this.freeze = false; 
-
-            /* map to set position walls and foods */
-            // instead of walls : 1, foods : " ", pacman : 2, ghost : 3
-            this.map = [["1","1","1","3","1","1","1","1","1","1","1","1","1"],
-                        ["1"," "," "," "," "," "," "," "," "," "," "," "," "],
-                        ["1"," ","1","3","3","3","1"," ","1","1","1"," ","1"],
-                        [" "," ","1","1","1","1","1"," ","1"," ","1"," "," "],
-                        ["1"," "," "," "," "," "," "," "," "," "," "," ","1"],
-                        ["1","1","1","1","1","1","2","1","1","1","1","1","1"]]
         }
 
         draw()
@@ -426,7 +485,13 @@
                 this.pacMan.draw();
                 this.wall.draw();
                 this.food.draw();
-                this.ghost.draw();
+
+                /* draw all ghosts*/
+                this.redGhost.draw();
+                this.pinkGhost.draw();
+                this.blueGhost.draw();
+                this.yellowGhost.draw();
+
                 this.collisionDetection();
 
                 this.winCheck();
@@ -437,16 +502,15 @@
 
         restart()
         {
-            this.pacMan = new Pacman(5,6,15);
             this.lives = 3;
             this.score = 0;
-            for(var c=0; c<this.food.column; c++)
-            {
-                for(var r=0; r<this.food.row; r++) 
-                {
-                    this.food.foods[c][r] = {x:0, y:0, status:1}; 
-                }
-            }
+            this.pacMan = new Pacman(5,6,15);
+            this.wall = new Wall();
+            this.redGhost = new Ghost(0,3);
+            this.pinkGhost = new Ghost(2,3);
+            this.blueGhost = new Ghost(2,4);
+            this.yellowGhost = new Ghost(2,5);
+            this.food = new Food();
             this.draw();
         }
 
@@ -480,6 +544,7 @@
                 }
             }
 
+            /*
             // when the ghost hit Pacman
             if(this.ghost.hitPacman(this.pacMan.posX, this.pacMan.posY))
             {
@@ -503,11 +568,12 @@
                     this.ghost = new Ghost(0,3);
                 }
             }
+            */
         }
 
         winCheck()
         {
-            if (this.score == 54) // winner
+            if (this.score == 33) // winner
             {
                 this.ctx.beginPath();
                 this.ctx.rect(this.canvas.width/6, this.canvas.height-250, 500, 150);
