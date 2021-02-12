@@ -97,19 +97,35 @@
             this.canvas = document.getElementById("canvas");
             this.ctx = this.canvas.getContext("2d");
             this.wall = new Wall();
+
             this.offsetLeft = 30;
             this.offsetTop = 60;
             this.radius = 15;
             this.row = row;
             this.column = column;
-            this.lastColumn = column;
-            this.lastRow = row;
             this.color = color;
-            this.canMove = false;
+            this.cooldown = 0;
+
+            this.direction = ["left", "right", "up", "down"];
 
             // center position
             this.posX = (column*60) + this.offsetLeft;
             this.posY = (row*60) + this.offsetTop;
+        }
+
+        set setCanMove(move)
+        {
+            this.canMove = move;
+        }
+
+        get getRow()
+        {
+            return this.row;
+        }
+        
+        get getColumn()
+        {
+            return this.column;
         }
 
         draw()
@@ -187,33 +203,83 @@
             }
         }
 
-        moveRed()
+        move()
         {
-            if(canMove)
-            {
+            this.cooldown++;
 
+            if(this.cooldown == 10) // can be move after being cooldown 20 times
+            {
+                var nextDirection = this.direction[Math.floor(Math.random() * this.direction.length)]; // random next direction
+
+                if (nextDirection == "left" || nextDirection == "right")
+                {
+                    var nextColumn;
+                    switch(nextDirection) // set next position
+                    {
+                        case "left":
+                            nextColumn = this.column-1; // move left
+                            break;
+
+                        case "right":
+                            nextColumn = this.column+1; // move right
+                            break;
+                    }
+
+                    if (nextColumn<0 || nextColumn>this.wall.getColumn-1) // the new position beyond the left or right edge of canvas  
+                    {
+                        this.cooldown = 0;
+                        this.move(); // random again
+                    }
+                    else if (this.wall.hasWall(this.row, nextColumn)) // the new position has a wall
+                    {
+                        this.cooldown = 0;
+                        this.move(); // random again
+                    }
+                    else
+                    {
+                        // set new position
+                        this.column = nextColumn;
+                    }
+                }
+                else if(nextDirection == "up" || nextDirection == "down")
+                {
+                    var nextRow;
+                    switch(nextDirection) // set next position
+                    {
+                        case "up":
+                            nextRow = this.row-1; // move up
+                            break;
+
+                        case "down":
+                            nextRow = this.row+1; // move down
+                            break;
+                    }
+
+                    if (nextRow<0 || nextRow>this.wall.getRow-1) // the new position beyond the top or bottom edge of canvas
+                    {
+                        this.cooldown = 0;
+                        this.move(); // random again
+                    }
+                    else if (this.wall.hasWall(nextRow,this.column)) // the new position has a wall
+                    {
+                        this.cooldown = 0;
+                        this.move(); // random again
+                    }
+                    else
+                    {
+                        // set new position
+                        this.row = nextRow;
+                    }
+                }
+                this.cooldown = 0;
+                this.updatePos();
             }
         }
 
-        movePink()
+        updatePos() // update position
         {
-
-        }
-
-        moveBlue()
-        {
-
-        }
-
-        moveYellow()
-        {
-            
-        }
-
-        updatePos(row, column) // update position
-        {
-            this.posX = (column*60) + this.offsetLeft;
-            this.posY = (row*60) + this.offsetTop;
+            this.posX = (this.column*60) + this.offsetLeft;
+            this.posY = (this.row*60) + this.offsetTop;
         }
 
         hitPacman(posX, posY)
@@ -239,8 +305,8 @@
             this.padding = 50; // distance between foods
             this.offsetTop = 55; // distance from the top canvas to food
             this.offsetLeft = 25; // distance from the left canvas to food
-            this.count = 0; // count the number of food created
             this.map = new Map();
+            this.countFoods = 0; // count the number of food created
 
             // create foods
             this.foods = [];
@@ -254,6 +320,7 @@
                         this.foods[r][c] = {x:0, y:0, status:1};
                         this.foods[r][c].x = (c*(this.width+this.padding))+this.offsetLeft;
                         this.foods[r][c].y = (r*(this.width+this.padding))+this.offsetTop;
+                        this.countFoods++;
                     }
                     else
                     {
@@ -337,6 +404,16 @@
             }
         }
 
+        get getRow()
+        {
+            return this.row;
+        } 
+        
+        get getColumn()
+        {
+            return this.column;
+        }
+
         draw()
         {
             for(var c=0; c<this.column; c++)
@@ -353,6 +430,11 @@
                     }                
                 }
             }
+        }
+
+        hasWall(row, column)
+        {
+            return this.walls[row][column].status==1?true:false;
         }
 
         hitWall(posX,posY,radius)
@@ -373,7 +455,7 @@
 
     class InputProcessor
     {
-        addEvent()
+        constructor()
         {
             document.addEventListener("keydown", this.keyDownHandler, false);
             document.addEventListener("mousemove", this.mouseMoveHandler, false);
@@ -385,29 +467,25 @@
             if (e.key == "d" || e.key == "ArrowRight" || e.key == "Right")
             {
                 game.pacMan.moveRight();
-                game.ghost.move(game.pacMan.posX, game.pacMan.posY);
             }
             //เมื่อกดปุ่มซ้าย
             else if (e.key == "a" || e.key == "ArrowLeft" || e.key == "Left")
             {
                 game.pacMan.moveLeft();
-                game.ghost.move(game.pacMan.posX, game.pacMan.posY);
             }
             //เมื่อกดปุ่มบน
             else if (e.key == "w" || e.key == "ArrowUp")
             {
                 game.pacMan.moveUp();
-                game.ghost.move(game.pacMan.posX, game.pacMan.posY);
             }
             //เมื่อกดปุ่มล่าง
             else if (e.key == "s" || e.key == "ArrowDown")
             {
                 game.pacMan.moveDown();
-                game.ghost.move(game.pacMan.posX, game.pacMan.posY);
             }
             else if (e.key == "r" || e.key == "R")
             {
-                // restart game
+                //restart game
                 game.freeze = false;
                 game.restart();
             }
@@ -467,20 +545,23 @@
             this.score = 0;
             this.pacMan = new Pacman(5,6,15);
             this.wall = new Wall();
+
             this.redGhost = new Ghost(0,3,"red");
             this.pinkGhost = new Ghost(2,3,"pink");
-            this.blueGhost = new Ghost(2,4,"blue");
+            this.blueGhost = new Ghost(2,4,"skyblue");
             this.yellowGhost = new Ghost(2,5,"gold");
+
             this.food = new Food();
             this.inputProcessor = new InputProcessor();
-            this.inputProcessor.addEvent();
             this.freeze = false; 
+            this.countTime = 0; // counting the time to let the ghosts start move
         }
 
         draw()
         {
             if(!this.freeze)
             {
+                this.countTime++;
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 this.pacMan.draw();
                 this.wall.draw();
@@ -491,6 +572,20 @@
                 this.pinkGhost.draw();
                 this.blueGhost.draw();
                 this.yellowGhost.draw();
+
+                this.redGhost.move();
+                if(this.countTime > 100) // the pink ghost start move
+                {
+                    this.pinkGhost.move();
+                }
+                if(this.countTime > 1000) // the blue ghost start move
+                {
+                    this.blueGhost.move();
+                }
+                if(this.countTime > 10000) // the yellow ghost start move
+                {
+                    this.yellowGhost.move();
+                }
 
                 this.collisionDetection();
 
@@ -573,7 +668,7 @@
 
         winCheck()
         {
-            if (this.score == 33) // winner
+            if (this.score == this.food.countFoods) // winner
             {
                 this.ctx.beginPath();
                 this.ctx.rect(this.canvas.width/6, this.canvas.height-250, 500, 150);
