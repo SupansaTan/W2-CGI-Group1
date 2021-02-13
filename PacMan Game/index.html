@@ -19,6 +19,7 @@
         {
             this.canvas = document.getElementById("canvas");
             this.ctx = this.canvas.getContext("2d");
+            this.wall = new Wall();
             this.row = row;
             this.column = column;
             this.offsetLeft = 30; // distance from the left canvas to Pacman
@@ -26,13 +27,24 @@
             this.posX = (column*60) + this.offsetLeft; // x position of the center point of circle
             this.posY = (row*60) + this.offsetTop; // y position of the center point of circle
             this.radius = radius;
-            this.direction;
-            this.lastposX;
-            this.lastposY;
+        }
+
+        get getRow()
+        {
+            return this.row;
+        }
+
+        get getColumn()
+        {
+            return this.column;
         }
 
         draw()
         { 
+            // update position
+            this.posX = (this.column*60) + this.offsetLeft;
+            this.posY = (this.row*60) + this.offsetTop;
+
             // draw pacman
             this.ctx.beginPath();
             this.ctx.arc(this.posX,this.posY,this.radius,0,Math.PI*2);
@@ -43,50 +55,42 @@
 
         moveLeft()
         {
-            this.lastposX = this.posX;
-
-            // when Pacman is not at the far left
-            if (this.posX-this.offsetLeft > 0) 
+            var nextColumn = this.column-1; // move left
+            // when the next position is not at the far left and not hit the wall
+            if (nextColumn>=0 && !this.wall.hasWall(this.row, nextColumn)) 
             {
-                this.posX -= 2*this.offsetLeft; 
-            } 
-            this.direction = "a"
+                this.column = nextColumn;
+            }
         }
 
         moveRight()
         {
-            this.lastposX = this.posX;
-
-            // when Pacman is not at the far right
-            if (this.posX + (2*this.offsetLeft) < this.canvas.width) 
+            var nextColumn = this.column+1; // move right
+            // when the next position is not at the far right and not hit the wall
+            if (nextColumn<=this.wall.getColumn && !this.wall.hasWall(this.row, nextColumn)) 
             {
-                this.posX += 2*this.offsetLeft;
+                this.column = nextColumn;
             }
-            this.direction ="d"
         }
 
         moveUp()
         {
-            this.lastposY = this.posY;
-
-            // when Pacman is not at the top
-            if (this.posY-this.offsetTop > 0) 
+            var nextRow = this.row-1; // move up
+            // when the next position is not at the top and not hit the wall
+            if (nextRow>=0 && !this.wall.hasWall(nextRow, this.column)) 
             {
-                this.posY -= this.offsetTop; 
+                this.row = nextRow; 
             }
-            this.direction ="w"
         }
 
         moveDown()
         {
-            this.lastposY = this.posY;
-
-            // when Pacman is not at the bottom
-            if (this.posY+this.offsetTop < this.canvas.height) 
+            var nextRow = this.row+1; // move down
+            // when the next position is not at the bottom and not hit the wall
+            if (nextRow<=this.wall.getRow && !this.wall.hasWall(nextRow, this.column)) 
             {
-                this.posY += this.offsetTop;
+                this.row = nextRow;
             }
-            this.direction ="s"
         }
     }
 
@@ -177,25 +181,25 @@
         {
             switch (name)
             {
-                case Red:
+                case 'red':
                     this.row = 0;
                     this.column = 3;
                     this.updatePos();
                     break;
                 
-                case Pink:
+                case 'pink':
                     this.row = 2;
                     this.column = 3;
                     this.updatePos();
                     break;
 
-                case Blue:
+                case 'blue':
                     this.row = 2;
                     this.column = 4;
                     this.updatePos();
                     break;
 
-                case Yellow:
+                case 'yellow':
                     this.row = 2;
                     this.column = 5;
                     this.updatePos();
@@ -282,12 +286,12 @@
             this.posY = (this.row*60) + this.offsetTop;
         }
 
-        hitPacman(posX, posY)
+        hitPacman(row, column)
         {
             // ghost hit pacman
-            if (this.posX-20<posX && posX<this.posX+20 && this.posY-30<posY && posY<this.posY+30)
+            if (this.row == row && this.column == column)
             {
-                return true; // hit pacman
+                return true;
             }
             return false;
         }
@@ -348,22 +352,12 @@
             }
         }
 
-        eated(posX,posY,radius)
+        eated(row, column)
         {
-            for (var r = 0; r < this.row; r++)
+            if (this.foods[row][column].status == 1 ) //ถ้าอาหารยังไม่ถูกกิน
             {
-                for (var c= 0; c < this.column; c++) 
-                {
-                    if (this.foods[r][c].status == 1 ) //ถ้าอาหารยังไม่ถูกกิน
-                    {
-                        if (posX+radius > this.foods[r][c].x && posX-radius < this.foods[r][c].x + this.width
-                        && posY+radius > this.foods[r][c].y && posY-radius < this.foods[r][c].y + this.width) 
-                        {
-                            this.foods[r][c].status = 0; //อาหารถูกกิน
-                            return true;
-                        }
-                    }
-                }
+                this.foods[row][column].status = 0; //อาหารถูกกิน
+                return true;
             }
             return false;
         }
@@ -545,16 +539,19 @@
             this.score = 0;
             this.pacMan = new Pacman(5,6,15);
             this.wall = new Wall();
+            this.ghosts = [];
 
             this.redGhost = new Ghost(0,3,"red");
             this.pinkGhost = new Ghost(2,3,"pink");
             this.blueGhost = new Ghost(2,4,"skyblue");
             this.yellowGhost = new Ghost(2,5,"gold");
+            this.ghosts.push(this.redGhost, this.pinkGhost, this.blueGhost, this.yellowGhost);
 
             this.food = new Food();
             this.inputProcessor = new InputProcessor();
-            this.freeze = false; 
+            this.freeze = false;
             this.countTime = 0; // counting the time to let the ghosts start move
+            this.draw()
         }
 
         draw()
@@ -567,13 +564,14 @@
                 this.wall.draw();
                 this.food.draw();
 
-                /* draw all ghosts*/
-                this.redGhost.draw();
-                this.pinkGhost.draw();
-                this.blueGhost.draw();
-                this.yellowGhost.draw();
+                /* draw ghosts*/
+                for (var i=0; i<this.ghosts.length; i++)
+                {
+                    this.ghosts[i].draw();
+                }
 
-                this.redGhost.move();
+                /* move ghosts */
+                this.redGhost.move(); // the red ghost can move after start game
                 if(this.countTime > 100) // the pink ghost start move
                 {
                     this.pinkGhost.move();
@@ -590,28 +588,20 @@
                 this.collisionDetection();
 
                 this.winCheck();
-                this.updateGame();
+                this.drawScoreAndLive();
                 requestAnimationFrame(()=>this.draw());
             }
         }
 
         restart()
         {
-            this.lives = 3;
-            this.score = 0;
-            this.pacMan = new Pacman(5,6,15);
-            this.wall = new Wall();
-            this.redGhost = new Ghost(0,3);
-            this.pinkGhost = new Ghost(2,3);
-            this.blueGhost = new Ghost(2,4);
-            this.yellowGhost = new Ghost(2,5);
-            this.food = new Food();
-            this.draw();
+            // restart the game
+            game = new Game();
         }
 
-        updateGame()
+        drawScoreAndLive()
         { 
-            // คะแนนกับชีวิต
+            // draw score and lives
             this.ctx.font = "16px Arial";
             this.ctx.fillStyle = "white";
             this.ctx.fillText("Score: " + this.score, 8, 20);
@@ -621,49 +611,40 @@
         collisionDetection()
         {
             // when the Pacman eat food
-            if(this.food.eated(this.pacMan.posX, this.pacMan.posY, this.pacMan.radius))
+            if(this.food.eated(this.pacMan.getRow, this.pacMan.getColumn))
             {
                 this.score += 1;
             }
-            
-            // when the Pacman hit wall
-            if(this.wall.hitWall(this.pacMan.posX,this.pacMan.posY, this.pacMan.radius))
-            {
-                if(this.pacMan.direction=="a" || this.pacMan.direction=="d")
-                {
-                    this.pacMan.posX = this.pacMan.lastposX
-                }
-                else if(this.pacMan.direction=="w" || this.pacMan.direction=="s")
-                {
-                    this.pacMan.posY = this.pacMan.lastposY
-                }
-            }
 
-            /*
             // when the ghost hit Pacman
-            if(this.ghost.hitPacman(this.pacMan.posX, this.pacMan.posY))
+            for (var i=0; i<this.ghosts.length; i++)
             {
-                if (this.lives == 1) // game over
+                if(this.ghosts[i].hitPacman(this.pacMan.getRow, this.pacMan.getColumn))
                 {
-                    this.ctx.beginPath();
-                    this.ctx.rect(this.canvas.width/6, this.canvas.height-250, 500, 150);
-                    this.ctx.fillStyle = "white";
-                    this.ctx.fill(); 
-                    this.ctx.font = "32px Arial";
-                    this.ctx.fillStyle = "black";
-                    this.ctx.fillText("Game Over !" ,280, 200);
-                    this.ctx.fillText("(Press r/R to restart game)" , 190, 250);
-                    this.freeze = true;
-                }
-                else
-                {
-                    this.lives -= 1;
-                    // move to start position
-                    this.pacMan = new Pacman(5,6,15);
-                    this.ghost = new Ghost(0,3);
+                    if (this.lives == 1) // game over
+                    {
+                        this.ctx.beginPath();
+                        this.ctx.rect(this.canvas.width/6, this.canvas.height-250, 500, 150);
+                        this.ctx.fillStyle = "white";
+                        this.ctx.fill(); 
+                        this.ctx.font = "32px Arial";
+                        this.ctx.fillStyle = "black";
+                        this.ctx.fillText("Game Over !" ,280, 200);
+                        this.ctx.fillText("(Press r/R to restart game)" , 190, 250);
+                        this.freeze = true;
+                    }
+                    else
+                    {
+                        this.lives -= 1; 
+                        /* move to start position */
+                        this.pacMan = new Pacman(5,6,15);
+                        for (var j=0; j<this.ghosts.length; j++)
+                        {
+                            this.ghosts[j].setDefaultPosition(this.ghosts[j].color);
+                        }
+                    }
                 }
             }
-            */
         }
 
         winCheck()
@@ -685,7 +666,6 @@
     }
 
     let game = new Game();
-    game.draw();
 </script>
 </body>
 </html>
