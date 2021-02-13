@@ -39,6 +39,16 @@
             return this.column;
         }
 
+        set setRow(row)
+        {
+            this.row = row;
+        }
+
+        set setColumn(column)
+        {
+            this.column = column;
+        }
+
         draw()
         { 
             // update position
@@ -94,7 +104,7 @@
         }
     }
 
-    class Ghost 
+    class Ghost
     {
         constructor(row, column, color)
         {
@@ -430,21 +440,6 @@
         {
             return this.walls[row][column].status==1?true:false;
         }
-
-        hitWall(posX,posY,radius)
-        {
-            for(var c=0;c<this.column;c++)
-            {
-                for(var r=0;r<this.row;r++)
-                {
-                    if (posX > this.walls[r][c].x && posX < this.walls[r][c].x + this.width 
-                        && posY > this.walls[r][c].y && posY < this.walls[r][c].y + this.height) 
-                    {
-                        return true; // hit wall
-                    } 
-                }
-            }
-        }
     }
 
     class InputProcessor
@@ -455,7 +450,7 @@
             document.addEventListener("mousemove", this.mouseMoveHandler, false);
         }
 
-        keyDownHandler(e) 
+        keyDownHandler(e)
         {
             //เมื่อกดปุ่มขวา
             if (e.key == "d" || e.key == "ArrowRight" || e.key == "Right")
@@ -487,24 +482,21 @@
 
         mouseMoveHandler(e)
         {
-            var relativeX = e.clientX - canvas.offsetLeft;
-            var relativeY = e.clientY - canvas.offsetTop;
-            var lastposX = game.pacMan.posX;
-            var lastposY = game.pacMan.posY;
+            var relativeX = e.clientX - game.canvas.offsetLeft;
+            var relativeY = e.clientY - game.canvas.offsetTop;
+            var newRow = (relativeY/60 |0);
+            var newColumn = (relativeX/60 |0);
 
-            if (relativeX > 0 && relativeX < canvas.width) 
+            /* set the new position to the pacman*/
+            if (newColumn>=0 && newColumn<=game.wall.getColumn-1         // the new position not beyond the left or right edge of canvas
+                && !game.wall.hasWall(game.pacMan.getRow, newColumn))   // the new position have not the wall
             {
-                game.pacMan.posX = relativeX;
+                game.pacMan.setColumn = newColumn;
             }
-            if (relativeY > 30 + game.pacMan.radius && relativeY < canvas.height) 
+            if (newRow>=0 && newRow<=game.wall.getRow-1                 // the new position not beyond the top or bottom edge of canvas
+                && !game.wall.hasWall(newRow, game.pacMan.getColumn)) // the new position has not the wall
             {
-                game.pacMan.posY = relativeY;
-            }
-            if (game.wall.hitWall(relativeX, relativeY, game.pacMan.radius)) // when pacman hit wall
-            {
-                // set to the previous position 
-                game.pacMan.posX = lastposX;
-                game.pacMan.posY = lastposY;
+                game.pacMan.setRow = newRow;
             }
         }
     }
